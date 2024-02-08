@@ -5,16 +5,21 @@ import {
     verifyToken,
 } from '../../middlewares/user.middleware.js';
 import {
+    changeUserRole,
+    getSingleUser,
     loginUser,
     logoutUser,
     registerUser,
-    changeUserRole,
+    updateUser,
+    deleteUser,
 } from './user.controller.js';
 import {
     changeUserRoleSchema,
+    getSingleUserSchema,
     loginSchema,
     logoutSchema,
     registerSchema,
+    updateUserSchema,
 } from './user.schema.js';
 
 const router = Router({ mergeParams: true });
@@ -35,10 +40,15 @@ router
 
 router
     .route("/change-user-role")
-    .get(verifyToken, checkPermission(["ADMIN"]), validate(changeUserRoleSchema, { keyByField: true }), changeUserRole)
+    .get(verifyToken, checkPermission(["ADMIN"]), validate(changeUserRoleSchema, { keyByField: true }), changeUserRole);
+
+router
+    .route("/:id")
+    .get(verifyToken, validate(getSingleUserSchema, { keyByField: true }), getSingleUser)
+    .patch(verifyToken, validate(updateUserSchema, { keyByField: true }), updateUser)
+    .delete(verifyToken, checkPermission(["ADMIN"]), validate(getSingleUserSchema, { keyByField: true }), deleteUser)
 
 //TODO: Add the route for user to change the password
-
 
 
 export default router;

@@ -30,9 +30,26 @@ const changeUserRoleSchema = {
     })
 }
 
+const getSingleUserSchema = {
+    params: Joi.object({
+        id: Joi.string().required()
+    })
+}
+
+const updateUserSchema = {
+    //optional validation for the user to update the user details
+    body: Joi.object().keys({
+        email: Joi.string().email(),
+        first_name: Joi.string(),
+        last_name: Joi.string()
+    })
+}
+
 export {
     registerSchema,
     loginSchema,
     logoutSchema,
-    changeUserRoleSchema
+    changeUserRoleSchema,
+    getSingleUserSchema,
+    updateUserSchema,
 };

@@ -112,6 +112,66 @@ class UserDal {
                 throw new CustomError(statusCodes.INTERNAL_SERVER_ERROR, "Something went wrong", err.message);
         }
     }
+
+    async getSingleUser(client, id) {
+        try {
+            const userSql = "SELECT * FROM users WHERE id = $1";
+            const userValues = [id];
+
+            const user = await client.query(userSql, userValues);
+
+            return user.rows[0];
+        } catch (err) {
+            if (err instanceof CustomError)
+                throw err;
+            else
+                throw new CustomError(statusCodes.INTERNAL_SERVER_ERROR, "Something went wrong", err.message);
+        }
+    }
+
+    async updateUser(client, id, body) {
+        try {
+            let updateUserSql = "UPDATE users SET ";
+            let updateUserValues = [];
+            let count = 1;
+
+            for (let key in body) {
+                updateUserSql += `${key} = $${count}, `;
+                updateUserValues.push(body[key]);
+                count++;
+            }
+
+            //remove the last comma and space
+            updateUserSql = updateUserSql.slice(0, -2);
+            updateUserSql += ` WHERE id = $${count} RETURNING *`;
+            updateUserValues.push(id);
+
+            const result = await client.query(updateUserSql, updateUserValues);
+
+            return result.rows[0];
+        } catch (err) {
+            if (err instanceof CustomError)
+                throw err;
+            else
+                throw new CustomError(statusCodes.INTERNAL_SERVER_ERROR, "Something went wrong", err.message);
+        }
+    }
+
+    async deleteUser(client, id) {
+        try {
+            const deleteUserSql = "DELETE FROM users WHERE id = $1";
+            const deleteUserValues = [id];
+
+            const result = await client.query(deleteUserSql, deleteUserValues);
+
+            return result;
+        } catch {
+            if (err instanceof CustomError)
+                throw err;
+            else
+                throw new CustomError(statusCodes.INTERNAL_SERVER_ERROR, "Something went wrong", err.message);
+        }
+    }
 }
 
 export default new UserDal();

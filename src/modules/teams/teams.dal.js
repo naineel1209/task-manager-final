@@ -31,24 +31,14 @@ class TeamsDal {
         }
     }
 
-
-    /**
-     * Check if user has a team
-     * @date 2/8/2024 - 11:10:36 AM
-     *
-     * @async
-     * @param {import("pg").PoolClient} client
-     * @param {string} tl_id
-     * @returns {Promise<import("pg").QueryResult<any> | CustomError>}
-     */
-    async checkIfUserHasTeam(client, tl_id) {
+    async deleteTeam(client, team_id) {
         try {
-            const checkIfUserHasTeamSql = "SELECT * FROM teams WHERE tl_id = $1";
-            const checkIfUserHasTeamValues = [tl_id];
+            const deleteTeamSql = "DELETE FROM teams WHERE id = $1 RETURNING *;";
+            const deleteTeamValues = [team_id];
 
-            const userHasTeam = await client.query(checkIfUserHasTeamSql, checkIfUserHasTeamValues);
+            const deletedTeam = await client.query(deleteTeamSql, deleteTeamValues);
 
-            return userHasTeam.rows[0];
+            return deletedTeam.rows[0];
         } catch (err) {
             if (err instanceof CustomError)
                 throw err;
@@ -67,6 +57,28 @@ class TeamsDal {
         try {
             const getTeamsSql = "SELECT * FROM teams";
             const teams = await client.query(getTeamsSql);
+
+            return teams.rows;
+        } catch (err) {
+            if (err instanceof CustomError)
+                throw err;
+            else
+                throw new CustomError(statusCodes.INTERNAL_SERVER_ERROR, "Something went wrong", err.message);
+        }
+    }
+
+    /**
+    * GET Teams DAL
+    * @date 2/8/2024 - 11:19:32 AM
+    *
+    * @returns {Promise<import("pg").QueryResult<any> | CustomError>}
+    */
+    async getSingleTeam(client, team_id) {
+        try {
+
+            let getSingleTeamSql = "SELECT u.* FROM teamsusersmapping tum INNER JOIN users u ON tum.user_id = u.id WHERE tum.team_id = $1";
+            const getSingleTeamValues = [team_id];
+            const teams = await client.query(getSingleTeamSql, getSingleTeamValues);
 
             return teams.rows;
         } catch (err) {
@@ -104,7 +116,7 @@ class TeamsDal {
                 }
             } else {
                 //user_id is a single user_id
-                addMemberToTeamSql += "VALUES ($1, $2)";
+                addMemberToTeamSql += "($1, $2)";
                 addMemberToTeamValues.push(user_id);
                 addMemberToTeamValues.push(team_id);
             };
@@ -113,6 +125,55 @@ class TeamsDal {
             const result = await client.query(addMemberToTeamSql, addMemberToTeamValues);
 
             return result.rows;
+        } catch (err) {
+            if (err instanceof CustomError)
+                throw err;
+            else
+                throw new CustomError(statusCodes.INTERNAL_SERVER_ERROR, "Something went wrong", err.message);
+        }
+    }
+
+    /**
+    * Remove Member from Team - DAL
+    * @async
+    * @param {import("pg").PoolClient} client 
+    * @param {string} team_id 
+    * @param {string | string[]} user_id 
+    * @param {boolean} multiple - if true, then user_id is an array of user_ids
+    * @returns {Promise<import("pg").QueryResult<any> | CustomError>}
+    */
+    async removeMemberFromTeam(client, team_id, user_id, multiple = false) {
+        try {
+            let addMemberToTeamSql = "DELETE FROM teamsusersmapping WHERE team_id = $1 AND user_id = ANY($2) RETURNING *;";
+            let addMemberToTeamValues = [team_id, user_id];
+            const result = await client.query(addMemberToTeamSql, addMemberToTeamValues);
+
+            return result.rows;
+        } catch (err) {
+            if (err instanceof CustomError)
+                throw err;
+            else
+                throw new CustomError(statusCodes.INTERNAL_SERVER_ERROR, "Something went wrong", err.message);
+        }
+    }
+
+    /**
+    * Check if user has a team
+    * @date 2/8/2024 - 11:10:36 AM
+    *
+    * @async
+    * @param {import("pg").PoolClient} client
+    * @param {string} tl_id
+    * @returns {Promise<import("pg").QueryResult<any> | CustomError>}
+    */
+    async checkIfUserHasTeam(client, tl_id) {
+        try {
+            const checkIfUserHasTeamSql = "SELECT * FROM teams WHERE tl_id = $1";
+            const checkIfUserHasTeamValues = [tl_id];
+
+            const userHasTeam = await client.query(checkIfUserHasTeamSql, checkIfUserHasTeamValues);
+
+            return userHasTeam.rows[0];
         } catch (err) {
             if (err instanceof CustomError)
                 throw err;
@@ -158,6 +219,29 @@ class TeamsDal {
             const userIsInAnyTeam = await client.query(checkIfUserIsInAnyTeamSql, checkIfUserIsInAnyTeamValues);
 
             return userIsInAnyTeam.rows[0];
+        } catch (err) {
+            if (err instanceof CustomError)
+                throw err;
+            else
+                throw new CustomError(statusCodes.INTERNAL_SERVER_ERROR, "Something went wrong", err.message);
+        }
+    }
+
+    /**
+     * DAL for checking if users exist in the team
+     * @param {import("pg").PoolClient} client 
+     * @param {string} team_id 
+     * @param {string} user_id 
+     * @returns QueryResult<any> | CustomError
+     */
+    async checkIfUsersExistInTeam(client, team_id, user_id) {
+        try {
+            const checkIfUsersExistInTeamSql = "SELECT * FROM teamsusersmapping WHERE team_id = $1 AND user_id = ANY($2)";
+            const checkIfUsersExistInTeamValues = [team_id, user_id];
+
+            const usersExist = await client.query(checkIfUsersExistInTeamSql, checkIfUsersExistInTeamValues);
+
+            return usersExist.rows[0];
         } catch (err) {
             if (err instanceof CustomError)
                 throw err;

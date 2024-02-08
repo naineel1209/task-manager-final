@@ -11,7 +11,7 @@ import statusCodes from "http-status-codes";
 import jwt from 'jsonwebtoken';
 config();
 
-class AuthServices {
+class UserServices {
 
 
     /**
@@ -143,6 +143,16 @@ class AuthServices {
         }
     }
 
+
+    /**
+     * Services to change the role of a user
+     * @date 2/8/2024 - 5:28:09 PM
+     *
+     * @async
+     * @param {string} id
+     * @param {string} role
+     * @returns {QueryResult<any> | Error}
+     */
     async changeRole(id, role) {
         const client = await pool.connect();
         try {
@@ -172,6 +182,101 @@ class AuthServices {
             client.release();
         }
     }
+
+    /**
+     * Service function to get a single user
+     * @date 2/8/2024 - 5:29:15 PM
+     *  @async
+     * @param {string} id
+     * @returns {*}
+     */
+    async getSingleUser(id) {
+        const client = await pool.connect();
+        try {
+            //Check if the user exists
+            const user = await userDal.getSingleUser(client, id);
+
+            //If user does not exist, throw an error
+            if (!user) {
+                throw new CustomError(statusCodes.BAD_REQUEST, "User does not exist", "User does not exist. Please try again with a different user id");
+            }
+
+            return user;
+        } catch (err) {
+            if (err instanceof CustomError) {
+                throw err;
+            } else {
+                throw new CustomError(statusCodes.INTERNAL_SERVER_ERROR, "Something went wrong", err.message);
+            }
+        } finally {
+            client.release();
+        }
+    }
+
+
+    /**
+     * Service function to update a user
+     * @date 2/8/2024 - 5:37:19 PM
+     *
+     * @async
+     * @param {string} id
+     * @param {object} body
+     * @returns {Promise<QueryResult<any> | Error>}
+     */
+    async updateUser(id, body, updater_id, updater_role) {
+        const client = await pool.connect();
+        try {
+            const user = await mainDal.checkUserExistsById(client, id);
+
+            if (!user) {
+                throw new CustomError(statusCodes.BAD_REQUEST, "User does not exist", "User does not exist. Please try again with a different user id");
+            }
+
+            if (updater_id !== id && updater_role !== "ADMIN") {
+                throw new CustomError(statusCodes.UNAUTHORIZED, "Unauthorized", "You are not authorized to update this user");
+            }
+
+            const result = await userDal.updateUser(client, id, body);
+
+            return result;
+        } catch (err) {
+            if (err instanceof CustomError) {
+                throw err;
+            } else {
+                throw new CustomError(statusCodes.INTERNAL_SERVER_ERROR, "Something went wrong", err.message);
+            }
+        } finally {
+            client.release();
+        }
+    }
+
+    async deleteUser(id) {
+        const client = await pool.connect();
+        try {
+            const user = await mainDal.checkUserExistsById(client, id);
+
+            if (!user) {
+                throw new CustomError(statusCodes.BAD_REQUEST, "User does not exist", "User does not exist. Please try again with a different user id");
+            }
+
+            const result = await userDal.deleteUser(client, id);
+
+            if (result) {
+                return { message: "User deleted" };
+            } else {
+                throw new CustomError(statusCodes.INTERNAL_SERVER_ERROR, "Something went wrong", "Something went wrong while deleting the user. Please try again later.");
+            }
+
+        } catch (err) {
+            if (err instanceof CustomError) {
+                throw err;
+            } else {
+                throw new CustomError(statusCodes.INTERNAL_SERVER_ERROR, "Something went wrong", err.message);
+            }
+        } finally {
+            client.release();
+        }
+    }
 }
 
-export default new AuthServices();
+export default new UserServices();

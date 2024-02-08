@@ -14,6 +14,15 @@ const createTeam = async (req, res) => {
     return res.status(statusCodes.CREATED).send({ team_id: createdTeam.id });
 }
 
+
+const deleteTeam = async (req, res) => {
+    const { team_id } = req.body;
+
+    const deletedTeam = await teamsServices.deleteTeam(team_id, req.user.id, req.user.role);
+
+    return res.status(statusCodes.OK).send(deletedTeam);
+}
+
 const getTeams = async (req, res) => {
     const teams = await teamsServices.getTeams();
 
@@ -28,8 +37,25 @@ const addMembersToTeam = async (req, res) => {
     return res.status(statusCodes.CREATED).send(addedMembers);
 }
 
+const removeMemberFromTeam = async (req, res) => {
+    const { team_id, user_id } = req.body;
+
+    const removedMember = await teamsServices.removeMembersFromTeam(team_id, user_id, req.user.id, req.user.role);
+
+    return res.status(statusCodes.OK).send(removedMember);
+}
+
+const getSingleTeam = async (req, res) => {
+    const team = await teamsServices.getSingleTeam(req.params.id);
+
+    return res.status(statusCodes.OK).send(team);
+}
+
 export {
     createTeam,
+    deleteTeam,
     getTeams,
-    addMembersToTeam
+    addMembersToTeam,
+    removeMemberFromTeam,
+    getSingleTeam,
 }
