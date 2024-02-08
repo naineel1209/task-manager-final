@@ -4,8 +4,8 @@
   "description": "",
   "main": "app.js",
   "scripts": {
-    "start": "node app.js",
-    "dev": "nodemon app.js",
+    "start": "node --no-warnings --experimental-modules --es-module-specifier-resolution=node app.js",
+    "dev": "nodemon --no-warnings --experimental-modules --es-module-specifier-resolution=node app.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "type": "module",

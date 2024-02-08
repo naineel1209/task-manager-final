@@ -42,6 +42,16 @@ class MainDal {
         }
     }
 
+
+    /**
+     * 
+     * @date 2/8/2024 - 10:59:13 AM
+     *
+     * @async
+     * @param {import('pg').PoolClient} client
+     * @param {string} id
+     * @returns {Promise<any> | Error}
+     */
     async checkUserExistsById(client, id) {
         try {
             let userExistsSql = "SELECT * FROM users WHERE id = $1";

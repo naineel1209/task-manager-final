@@ -1,18 +1,20 @@
+import cookieParser from "cookie-parser";
 import cors from "cors";
 import { config } from "dotenv";
 import express from "express";
 import "express-async-errors";
 import { createServer } from "http";
 import statusCodes from "http-status-codes";
-import cookieParser from "cookie-parser";
+import { ValidationError } from "express-validation";
 config();
 
 //! loggers
 import logger from "./config/winston.config.js";
 
 //! Routes
+import privateRoutes from "./src/modules/private/private.routes.js";
+import teamsRoutes from "./src/modules/teams/teams.routes.js";
 import authRoutes from "./src/modules/user/user.routes.js";
-import privateRoutes from "./src/modules/private/private.routes.js"
 
 const app = express();
 const server = createServer(app);
@@ -40,7 +42,10 @@ app.get("/", (req, res) => {
     res.send("Hello World");
 });
 
-app.use("/auth", authRoutes);
+app.use("/user", authRoutes);
+
+//! Teams Routes
+app.use("/teams", teamsRoutes);
 
 //! Private Routes
 app.use("/private", privateRoutes);
@@ -60,6 +65,10 @@ app.use((err, req, res, next) => {
 
     if (process.env.NODE_ENV === "development") {
         console.log("error stack : ", err.stack)
+    }
+
+    if (err instanceof ValidationError) {
+        return res.status(err.statusCode).json({ message: err.message, errors: err.details });
     }
 
     res.status(err.status || statusCodes.INTERNAL_SERVER_ERROR).json({

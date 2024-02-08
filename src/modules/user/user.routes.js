@@ -19,7 +19,7 @@ import {
 
 const router = Router({ mergeParams: true });
 
-//!PATH - /auth
+//!PATH - /user
 
 router
     .route("/register")
@@ -36,5 +36,9 @@ router
 router
     .route("/change-user-role")
     .get(verifyToken, checkPermission(["ADMIN"]), validate(changeUserRoleSchema, { keyByField: true }), changeUserRole)
+
+//TODO: Add the route for user to change the password
+
+
 
 export default router;

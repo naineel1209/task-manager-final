@@ -1,5 +1,5 @@
 //!module
-import authDal from "./user.dal.js";
+import userDal from "./user.dal.js";
 import mainDal from "../main/main.dal.js";
 import pool from "../../../config/db.config.js";
 import CustomError from "../../errors/CustomError.js";
@@ -27,7 +27,7 @@ class AuthServices {
         const client = await pool.connect();
         try {
             //Check if user exists
-            const user = await generalDal.checkUserExists(client, username);
+            const user = await mainDal.checkUserExists(client, username);
             if (!user) {
                 throw new CustomError(statusCodes.BAD_REQUEST, "Invalid credentials", "Invalid username or password. Please try again.");
             }
@@ -45,7 +45,7 @@ class AuthServices {
 
             user.accessToken = accessToken;
 
-            const userRefreshToken = await authDal.setRefreshToken(client, user.id, refreshToken);
+            const userRefreshToken = await userDal.setRefreshToken(client, user.id, refreshToken);
 
             //this will never happen as the service will throw an error if the refresh token is not set
             //but just in case it does, throw an error
@@ -79,7 +79,7 @@ class AuthServices {
         const client = await pool.connect();
         try {
             //Check if user exists
-            const userExists = await generalDal.checkUserExists(client, username);
+            const userExists = await mainDal.checkUserExists(client, username);
 
             //If user exists, throw error
             if (userExists) {
@@ -87,7 +87,7 @@ class AuthServices {
             }
 
             //Get the user count
-            const userCount = await generalDal.getUserCount(client);
+            const userCount = await mainDal.getUserCount(client);
 
             //If user count is <= 5, role is admin, else role is user
             let role = "DEV";
@@ -98,8 +98,8 @@ class AuthServices {
             //Hash the password
             const hashedPassword = await bcrypt.hash(password, Number(process.env.SALT_ROUNDS));
 
-            //Register the user to the authDal
-            const user = await authDal.register(client, username, hashedPassword, firstName, lastName, email, role);
+            //Register the user to the userDal
+            const user = await userDal.register(client, username, hashedPassword, firstName, lastName, email, role);
 
             return user; //Return the user data
         } catch (err) {
@@ -124,7 +124,7 @@ class AuthServices {
         const client = await pool.connect();
         try {
             //Remove the refresh token from the database
-            const result = await authDal.setRefreshToken(client, id, null);
+            const result = await userDal.setRefreshToken(client, id, null);
 
             //If the refresh token is not removed, throw an error
             if (!result) {
@@ -147,7 +147,7 @@ class AuthServices {
         const client = await pool.connect();
         try {
             /**
-             * TODO: Implement the temporary ban on the user role change until all projects with TL are completed
+             //TODO: Implement the temporary ban on the user role change until all projects with TL are completed
              */
 
             //Check if the user exists
@@ -159,7 +159,7 @@ class AuthServices {
             }
 
             //Change the role of the user
-            const result = await authDal.changeRole(client, id, role);
+            const result = await userDal.changeRole(client, id, role);
 
             return result;
         } catch (err) {

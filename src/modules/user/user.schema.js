@@ -18,7 +18,7 @@ const loginSchema = {
 }
 
 const logoutSchema = {
-    body: Joi.object({
+    cookies: Joi.object({
         accessToken: Joi.string().required()
     })
 }
