@@ -31,6 +31,12 @@ class TeamsDal {
         }
     }
 
+    /**
+     *  DELETE Team DAL 
+     * @param {import("pg").PoolClient} client 
+     * @param {string} team_id 
+     * @returns {QueryResult<any> | CustomError}
+     */
     async deleteTeam(client, team_id) {
         try {
             const deleteTeamSql = "DELETE FROM teams WHERE id = $1 RETURNING *;";
@@ -39,6 +45,40 @@ class TeamsDal {
             const deletedTeam = await client.query(deleteTeamSql, deleteTeamValues);
 
             return deletedTeam.rows[0];
+        } catch (err) {
+            if (err instanceof CustomError)
+                throw err;
+            else
+                throw new CustomError(statusCodes.INTERNAL_SERVER_ERROR, "Something went wrong", err.message);
+        }
+    }
+
+    /**
+     * 
+     * @param {*} client 
+     * @param {*} team_id 
+     * @param {*} updateData 
+     * @returns {Promise<import("pg").QueryResult<any> | CustomError>}
+     */
+    async updateTeam(client, team_id, updateData) {
+        try {
+            let updateTeamSql = "UPDATE teams SET ";
+            let updateTeamValues = [];
+
+            let i = 1;
+
+            for (let key in updateData) {
+                updateTeamSql += `${key} = $${i++}, `;
+                updateTeamValues.push(updateData[key]);
+            }
+
+            updateTeamSql = updateTeamSql.slice(0, -2); //remove the last comma and space
+            updateTeamSql += ` WHERE id = $${i} RETURNING *;`;
+            updateTeamValues.push(team_id);
+
+            const updatedTeam = await client.query(updateTeamSql, updateTeamValues);
+
+            return updatedTeam.rows[0];
         } catch (err) {
             if (err instanceof CustomError)
                 throw err;

@@ -6,15 +6,18 @@ import {
     createTeam,
     deleteTeam,
     getSingleTeam,
+    getTeamMembers,
     getTeams,
-    removeMemberFromTeam
+    removeMemberFromTeam,
+    updateTeam
 } from "./teams.controller.js";
 import {
     addMembersToTeamSchema,
     createTeamSchema,
+    deleteTeamSchema,
     getSingleTeamSchema,
     removeMembersFromTeamSchema,
-    deleteTeamSchema,
+    updateTeamSchema,
 } from "./teams.schema.js";
 const router = Router({ mergeParams: true });
 
@@ -32,7 +35,10 @@ router
     .route("/delete")
     .delete(verifyToken, checkPermission(["ADMIN"]), validate(deleteTeamSchema, { keyByField: true }), deleteTeam);
 
-//TODO - update the teams
+router
+    .route("/update")
+    .patch(verifyToken, checkPermission(["ADMIN", "TL"]), validate(updateTeamSchema, { keyByField: true }), updateTeam);
+
 router
     .route("/add-member")
     .post(verifyToken, checkPermission(["ADMIN", "TL"]), validate(addMembersToTeamSchema, { keyByField: true }), addMembersToTeam);
@@ -44,6 +50,9 @@ router
 
 
 //TODO: Add a route to get all team members of current user
+router
+    .route("/get-team-members")
+    .get(verifyToken, getTeamMembers);
 
 router
     .route("/:id")

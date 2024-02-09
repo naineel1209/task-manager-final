@@ -3,9 +3,9 @@ import cors from "cors";
 import { config } from "dotenv";
 import express from "express";
 import "express-async-errors";
+import { ValidationError } from "express-validation";
 import { createServer } from "http";
 import statusCodes from "http-status-codes";
-import { ValidationError } from "express-validation";
 config();
 
 //! loggers
@@ -13,8 +13,9 @@ import logger from "./config/winston.config.js";
 
 //! Routes
 import privateRoutes from "./src/modules/private/private.routes.js";
+import projectsRoutes from "./src/modules/projects/projects.routes.js";
 import teamsRoutes from "./src/modules/teams/teams.routes.js";
-import authRoutes from "./src/modules/user/user.routes.js";
+import authRoutes from "./src/modules/users/user.routes.js";
 
 const app = express();
 const server = createServer(app);
@@ -46,6 +47,9 @@ app.use("/user", authRoutes);
 
 //! Teams Routes
 app.use("/teams", teamsRoutes);
+
+//! Projects Routes
+app.use("/projects", projectsRoutes);
 
 //! Private Routes
 app.use("/private", privateRoutes);

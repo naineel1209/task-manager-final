@@ -6,7 +6,6 @@ import mainDal from '../main/main.dal.js';
 import teamsDal from './teams.dal.js';
 import CustomError from '../../errors/CustomError.js';
 import statusCodes from "http-status-codes";
-import userDal from '../user/user.dal.js';
 
 class TeamsServices {
 
@@ -58,6 +57,15 @@ class TeamsServices {
         }
     }
 
+
+    /**
+     * delete team service
+     * @date 2/9/2024 - 10:31:17 AM
+     *
+     * @async
+     * @param {*} team_id
+     * @returns {unknown}
+     */
     async deleteTeam(team_id) {
         const client = await pool.connect();
         try {
@@ -83,6 +91,43 @@ class TeamsServices {
     }
 
     /**
+     * 
+     * @param {*} team_id 
+     * @param {*} data 
+     * @param {*} admin_id 
+     * @param {*} admin_role 
+     * @returns object
+     */
+    async updateTeam(team_id, data, admin_id, admin_role) {
+        const client = await pool.connect();
+        try {
+            //check if the team exists
+            const teamExists = await teamsDal.checkIfTeamExists(client, team_id);
+
+            if (!teamExists) {
+                throw new CustomError(statusCodes.BAD_REQUEST, "Team does not exist", "Team does not exist in the database.");
+            }
+
+            //throw error if the creator is not the admin or the tl of the team
+            if (!(admin_role === "ADMIN" || admin_id === teamExists.tl_id)) {
+                throw new CustomError(statusCodes.UNAUTHORIZED, "Unauthorized", "You are not authorized to update the team.");
+            }
+
+            //update the team
+            const updatedTeam = await teamsDal.updateTeam(client, team_id, data);
+
+            return updatedTeam;
+        } catch (err) {
+            if (err instanceof CustomError)
+                throw err;
+            else
+                throw new CustomError(statusCodes.INTERNAL_SERVER_ERROR, "Something went wrong", err.message);
+        } finally {
+            client.release();
+        }
+    }
+
+    /**
      * Service to add members to the team
      * @param {string} team_id 
      * @param {string | string[]} user_id 
@@ -90,7 +135,6 @@ class TeamsServices {
      * @param {string} creator_role 
      */
     async addMembersToTeam(team_id, user_id, creator_id, creator_role) {
-        console.log(creator_role)
         const client = await pool.connect();
         try {
             //check if the team exists
@@ -103,6 +147,31 @@ class TeamsServices {
             //throw error if the creator is not the admin or the tl of the team
             if (!(creator_role === "ADMIN" || creator_id === teamExists.tl_id)) {
                 throw new CustomError(statusCodes.UNAUTHORIZED, "Unauthorized", "You are not authorized to add members to the team.");
+            }
+
+            //check if all users/user exist in the database and if the user is in any team or not
+            if (Array.isArray(user_id)) {
+                for (let item of user_id) {
+                    const userExists = await mainDal.checkUserExistsById(client, item);
+                    if (!userExists) {
+                        throw new CustomError(statusCodes.BAD_REQUEST, "User does not exist", "User does not exist in the database.");
+                    }
+
+                    const userIsInAnyTeam = await teamsDal.checkIfUserIsInAnyTeam(client, item);
+                    if (userIsInAnyTeam) {
+                        throw new CustomError(statusCodes.BAD_REQUEST, "User is in a team", "User is already in a team.");
+                    }
+                }
+            } else {
+                const userExists = await mainDal.checkUserExistsById(client, item);
+                if (!userExists) {
+                    throw new CustomError(statusCodes.BAD_REQUEST, "User does not exist", "User does not exist in the database.");
+                }
+
+                const userIsInAnyTeam = await teamsDal.checkIfUserIsInAnyTeam(client, item);
+                if (userIsInAnyTeam) {
+                    throw new CustomError(statusCodes.BAD_REQUEST, "User is in a team", "User is already in a team.");
+                }
             }
 
             //all users exist in the database and the creator is the admin or the tl of the team
@@ -178,6 +247,8 @@ class TeamsServices {
                 throw err;
             else
                 throw new CustomError(statusCodes.INTERNAL_SERVER_ERROR, "Something went wrong", err.message);
+        } finally {
+            client.release();
         }
     }
 
@@ -209,6 +280,35 @@ class TeamsServices {
                 throw err;
             else
                 throw new CustomError(statusCodes.INTERNAL_SERVER_ERROR, "Something went wrong", err.message);
+        } finally {
+            client.release();
+        }
+    }
+
+    /**
+     * Returns the team members of the current user
+     * @param {string} user_id 
+     * @returns {Promise<any> | CustomError}
+     */
+    async getTeamMembers(user_id) {
+        const client = await pool.connect();
+        try {
+            const teamExists = await teamsDal.checkIfUserIsInAnyTeam(client, user_id);
+
+            if (!teamExists) {
+                throw new CustomError(statusCodes.BAD_REQUEST, "User does not belong to any team", "User does not belong to any team.");
+            }
+
+            const teamMembers = await teamsDal.getSingleTeam(client, teamExists.team_id);
+
+            return { teamMembers };
+        } catch (err) {
+            if (err instanceof CustomError)
+                throw err;
+            else
+                throw new CustomError(statusCodes.INTERNAL_SERVER_ERROR, "Something went wrong", err.message);
+        } finally {
+            client.release();
         }
     }
 }

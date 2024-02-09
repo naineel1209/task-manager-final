@@ -13,6 +13,15 @@ const deleteTeamSchema = {
     })
 }
 
+const updateTeamSchema = {
+    body: Joi.object({
+        team_id: Joi.string().required()
+    }).keys({
+        name: Joi.string(),
+        tl_id: Joi.string()
+    })
+}
+
 const addMembersToTeamSchema = {
     body: Joi.object({
         team_id: Joi.string().required(),
@@ -41,8 +50,9 @@ const getSingleTeamSchema = {
 
 export {
     createTeamSchema,
+    deleteTeamSchema,
+    updateTeamSchema,
     addMembersToTeamSchema,
     removeMembersFromTeamSchema,
     getSingleTeamSchema,
-    deleteTeamSchema
 }

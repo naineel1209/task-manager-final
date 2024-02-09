@@ -1,8 +1,8 @@
 import statusCodes from "http-status-codes";
 import jwt, { decode } from "jsonwebtoken";
 import pool from "../../config/db.config.js";
-import { loginSchema, registerSchema } from "../modules/user/user.schema.js";
-import authDal from "../modules/user/user.dal.js";
+import { loginSchema, registerSchema } from "../modules/users/user.schema.js";
+import authDal from "../modules/users/user.dal.js";
 
 
 /**
@@ -14,7 +14,7 @@ import authDal from "../modules/user/user.dal.js";
  */
 
 const verifyToken = async (req, res, next) => {
-    const { accessToken } = req.cookies;
+    const { accessToken } = req.cookies || req.headers.Authorization.split(" ")[1];
 
     if (!accessToken) {
         return res.status(statusCodes.UNAUTHORIZED).send({ message: "Access Token is missing" });
