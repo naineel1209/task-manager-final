@@ -5,18 +5,20 @@ import {
     verifyToken,
 } from '../../middlewares/user.middleware.js';
 import {
+    getUserTasks
+} from '../tasks/tasks.controller.js';
+import {
+    changePassword,
     changeUserRole,
+    deleteUser,
     getSingleUser,
     loginUser,
     logoutUser,
     registerUser,
-    updateUser,
-    deleteUser,
+    updateUser
 } from './user.controller.js';
 import {
-    getUserTasks
-} from '../tasks/tasks.controller.js';
-import {
+    changePasswordSchema,
     changeUserRoleSchema,
     getSingleUserSchema,
     loginSchema,
@@ -49,16 +51,15 @@ router
     .route("/get-tasks")
     .get(verifyToken, getUserTasks);
 
+//TODO: Add the route for user to change the password
+router
+    .route("/change-password")
+    .patch(verifyToken, validate(changePasswordSchema, { keyByField: true }), changePassword);
+
 router
     .route("/:id")
     .get(verifyToken, validate(getSingleUserSchema, { keyByField: true }), getSingleUser)
     .patch(verifyToken, validate(updateUserSchema, { keyByField: true }), updateUser)
     .delete(verifyToken, checkPermission(["ADMIN"]), validate(getSingleUserSchema, { keyByField: true }), deleteUser);
-
-
-
-
-//TODO: Add the route for user to change the password
-
 
 export default router;

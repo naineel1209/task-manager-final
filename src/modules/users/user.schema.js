@@ -45,11 +45,20 @@ const updateUserSchema = {
     })
 }
 
+const changePasswordSchema = {
+    body: Joi.object({
+        oldPassword: Joi.string().required(),
+        newPassword: Joi.string().min(8).required(),
+        confirmedNewPassword: Joi.valid(Joi.ref('newPassword')).required() // Validate against the value of 'field1'
+            .messages({
+                'any.only': 'confirmedNewPassword must have the same value as newPassword',
+            }),
+    }),
+}
+
 export {
-    registerSchema,
-    loginSchema,
-    logoutSchema,
-    changeUserRoleSchema,
-    getSingleUserSchema,
-    updateUserSchema,
+    changePasswordSchema, changeUserRoleSchema,
+    getSingleUserSchema, loginSchema,
+    logoutSchema, registerSchema, updateUserSchema
 };
+

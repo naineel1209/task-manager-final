@@ -113,6 +113,12 @@ class UserDal {
         }
     }
 
+    /**
+     * get single user from the database
+     * @param {*} client 
+     * @param {*} id 
+     * @returns 
+     */
     async getSingleUser(client, id) {
         try {
             const userSql = "SELECT * FROM users WHERE id = $1";
@@ -129,6 +135,13 @@ class UserDal {
         }
     }
 
+    /**
+     * update single user in the database
+     * @param {*} client 
+     * @param {*} id 
+     * @param {*} body 
+     * @returns 
+     */
     async updateUser(client, id, body) {
         try {
             let updateUserSql = "UPDATE users SET ";
@@ -157,6 +170,12 @@ class UserDal {
         }
     }
 
+    /**
+     * delete the user from the database
+     * @param {*} client 
+     * @param {*} id 
+     * @returns 
+     */
     async deleteUser(client, id) {
         try {
             const deleteUserSql = "DELETE FROM users WHERE id = $1";
@@ -171,6 +190,11 @@ class UserDal {
             else
                 throw new CustomError(statusCodes.INTERNAL_SERVER_ERROR, "Something went wrong", err.message);
         }
+    }
+
+
+    async changePassword(client, id, newPassword) {
+
     }
 }
 

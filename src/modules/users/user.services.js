@@ -250,6 +250,11 @@ class UserServices {
         }
     }
 
+    /**
+     * delete the user
+     * @param {*} id 
+     * @returns 
+     */
     async deleteUser(id) {
         const client = await pool.connect();
         try {
@@ -272,6 +277,34 @@ class UserServices {
                 throw err;
             } else {
                 throw new CustomError(statusCodes.INTERNAL_SERVER_ERROR, "Something went wrong", err.message);
+            }
+        } finally {
+            client.release();
+        }
+    }
+
+
+    async changePassword(user_id, oldPassword, newPassword) {
+        const client = await pool.connect();
+        try {
+            const userDetails = await userDal.getSingleUser(client, user_id);
+
+            const compare = await bcrypt.compare(oldPassword, userDetails.password);
+
+            if (!compare) {
+                throw new CustomError(statusCodes.UNAUTHORIZED, "Unauthorized", "Invalid Credentials");
+            }
+
+            const hashedNewPassword = await bcrypt.hash(newPassword, Number(process.env.SALT_ROUNDS));
+
+            const updatedUser = await userDal.updateUser(client, user_id, { password: hashedNewPassword });
+
+            return updatedUser;
+        } catch (err) {
+            if (err instanceof CustomError) {
+                throw err;
+            } else {
+                throw new CustomError(500, "Something went wrong", err.message);
             }
         } finally {
             client.release();

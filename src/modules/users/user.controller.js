@@ -1,7 +1,6 @@
 import { config } from "dotenv";
-import userServices from "./user.services.js";
 import statusCodes from "http-status-codes";
-import mainDal from "../main/main.dal.js";
+import userServices from "./user.services.js";
 config();
 
 /**
@@ -111,12 +110,21 @@ const deleteUser = async (req, res) => {
 
 }
 
+const changePassword = async (req, res) => {
+    const { oldPassword, newPassword, confirmedNewPassword } = req.body;
+
+    if (newPassword !== confirmedNewPassword) {
+        return res.status(statusCodes.BAD_REQUEST).send({ message: "Mismatched new password" })
+    }
+
+    const userData = await userServices.changePassword(req.user.id, oldPassword, newPassword);
+
+    return res.status(statusCodes.OK).send(userData);
+}
+
 export {
-    loginUser,
+    changePassword, changeUserRole, deleteUser, getSingleUser, loginUser,
     logoutUser,
-    registerUser,
-    changeUserRole,
-    getSingleUser,
-    updateUser,
-    deleteUser
+    registerUser, updateUser
 };
+
