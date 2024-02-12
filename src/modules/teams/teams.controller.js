@@ -42,6 +42,12 @@ const getTeamMembers = async (req, res) => {
     return res.status(statusCodes.OK).send(members);
 }
 
+const getUserTeam = async (req, res) => {
+    const team = await teamsServices.getUserTeam(req.user.id);
+
+    return res.status(statusCodes.OK).send(team);
+}
+
 const addMembersToTeam = async (req, res) => {
     const { team_id, user_id } = req.body;
 
@@ -64,8 +70,14 @@ const getSingleTeam = async (req, res) => {
     return res.status(statusCodes.OK).send(team);
 }
 
+const getTeamProjects = async (req, res) => {
+    const projects = await teamsServices.getTeamProjects(req.params.id);
+
+    return res.status(statusCodes.OK).send(projects);
+}
+
 export {
     addMembersToTeam, createTeam,
-    deleteTeam, getSingleTeam, getTeamMembers, getTeams, removeMemberFromTeam, updateTeam
+    deleteTeam, getSingleTeam, getTeamMembers, getTeamProjects, getTeams, getUserTeam, removeMemberFromTeam, updateTeam
 };
 

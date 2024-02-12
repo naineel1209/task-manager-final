@@ -289,6 +289,22 @@ class TeamsDal {
                 throw new CustomError(statusCodes.INTERNAL_SERVER_ERROR, "Something went wrong", err.message);
         }
     }
+
+    async getTeamProjects(client, team_id) {
+        try {
+            const getTeamProjectsSql = "SELECT * FROM projects WHERE team_id = $1";
+            const getTeamProjectsValues = [team_id];
+
+            const teamProjects = await client.query(getTeamProjectsSql, getTeamProjectsValues);
+
+            return teamProjects.rows;
+        } catch (err) {
+            if (err instanceof CustomError)
+                throw err;
+            else
+                throw new CustomError(statusCodes.INTERNAL_SERVER_ERROR, "Something went wrong", err.message);
+        }
+    }
 }
 
 export default new TeamsDal();

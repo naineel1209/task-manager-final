@@ -16,6 +16,7 @@ import privateRoutes from "./src/modules/private/private.routes.js";
 import projectsRoutes from "./src/modules/projects/projects.routes.js";
 import teamsRoutes from "./src/modules/teams/teams.routes.js";
 import authRoutes from "./src/modules/users/user.routes.js";
+import commentsRoutes from "./src/modules/comments/comments.routes.js";
 
 const app = express();
 const server = createServer(app);
@@ -50,6 +51,9 @@ app.use("/teams", teamsRoutes);
 
 //! Projects Routes
 app.use("/projects", projectsRoutes);
+
+//! tasks -> comments
+app.use("/tasks", commentsRoutes)
 
 //! Private Routes
 app.use("/private", privateRoutes);

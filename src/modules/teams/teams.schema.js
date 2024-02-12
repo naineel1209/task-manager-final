@@ -48,11 +48,13 @@ const getSingleTeamSchema = {
     })
 }
 
-export {
-    createTeamSchema,
-    deleteTeamSchema,
-    updateTeamSchema,
-    addMembersToTeamSchema,
-    removeMembersFromTeamSchema,
-    getSingleTeamSchema,
+const teamProjectsSchema = {
+    params: Joi.object({
+        id: Joi.string().required()
+    })
 }
+
+export {
+    addMembersToTeamSchema, createTeamSchema,
+    deleteTeamSchema, getSingleTeamSchema, removeMembersFromTeamSchema, teamProjectsSchema, updateTeamSchema
+};

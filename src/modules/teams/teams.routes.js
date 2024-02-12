@@ -7,7 +7,9 @@ import {
     deleteTeam,
     getSingleTeam,
     getTeamMembers,
+    getTeamProjects,
     getTeams,
+    getUserTeam,
     removeMemberFromTeam,
     updateTeam
 } from "./teams.controller.js";
@@ -17,7 +19,8 @@ import {
     deleteTeamSchema,
     getSingleTeamSchema,
     removeMembersFromTeamSchema,
-    updateTeamSchema,
+    teamProjectsSchema,
+    updateTeamSchema
 } from "./teams.schema.js";
 const router = Router({ mergeParams: true });
 
@@ -49,13 +52,24 @@ router
 
 
 
-//TODO: Add a route to get all team members of current user
+//below route is for getting team of current user
+router
+    .route("/get-user-team")
+    .get(verifyToken, getUserTeam);
+
+//below route is for getting all team members of the current user
 router
     .route("/get-team-members")
     .get(verifyToken, getTeamMembers);
 
+//below route is for getting team member of a single team
 router
     .route("/:id")
     .get(verifyToken, validate(getSingleTeamSchema), getSingleTeam)
+
+//below route is for getting all projects of a single team
+router
+    .route("/:id/projects")
+    .get(verifyToken, validate(teamProjectsSchema), getTeamProjects);
 
 export default router;

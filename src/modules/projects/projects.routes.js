@@ -17,6 +17,7 @@ import {
     deleteProjectSchema,
     updateProjectSchema
 } from "./projects.schema.js";
+import tasksRoutes from "../tasks/tasks.routes.js";
 
 //!Projects
 
@@ -24,7 +25,7 @@ const router = Router();
 
 router
     .route("/")
-    .get(verifyToken, checkPermission(["ADMIN"]), getAllProjects)
+    .get(verifyToken, getAllProjects) //TODO:  Add inner joins to all the get requests
     .post(verifyToken, checkPermission(["ADMIN"]), validate(createProjectSchema, { keyByField: true }), createProject)
 
 
@@ -33,5 +34,7 @@ router
     .get(verifyToken, validate(deleteProjectSchema, { keyByField: true }), getProject)
     .delete(verifyToken, checkPermission(["ADMIN"]), validate(deleteProjectSchema, { keyByField: true }), deleteProject)
     .patch(verifyToken, checkPermission(["ADMIN"]), validate(updateProjectSchema, { keyByField: true }), updateProject);
+
+router.use("/:id/tasks", tasksRoutes);
 
 export default router;

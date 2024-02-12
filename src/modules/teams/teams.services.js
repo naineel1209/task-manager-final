@@ -212,7 +212,12 @@ class TeamsServices {
             }
 
             //check if all users/user exist in the database
-            const usersExist = await teamsDal.checkIfUsersExistInTeam(client, team_id, user_id);
+            let usersExist;
+            if (Array.isArray(user_id)) {
+                usersExist = await teamsDal.checkIfUsersExistInTeam(client, team_id, user_id);
+            } else {
+                usersExist = await teamsDal.checkIfUsersExistInTeam(client, team_id, [user_id]);
+            }
 
             if (!usersExist) {
                 throw new CustomError(statusCodes.BAD_REQUEST, "User does not exist", "User does not exist in the database.");
@@ -242,6 +247,31 @@ class TeamsServices {
         try {
             const teams = await teamsDal.getTeams(client);
             return teams;
+        } catch (err) {
+            if (err instanceof CustomError)
+                throw err;
+            else
+                throw new CustomError(statusCodes.INTERNAL_SERVER_ERROR, "Something went wrong", err.message);
+        } finally {
+            client.release();
+        }
+    }
+
+    /**
+     * GET service to get the team of the current user
+     * @param {*} user_id 
+     * @returns 
+     */
+    async getUserTeam(user_id) {
+        const client = await pool.connect();
+        try {
+            const teamExists = await teamsDal.checkIfUserIsInAnyTeam(client, user_id);
+
+            if (!teamExists) {
+                throw new CustomError(statusCodes.BAD_REQUEST, "User does not belong to any team", "User does not belong to any team.");
+            }
+
+            return teamExists;
         } catch (err) {
             if (err instanceof CustomError)
                 throw err;
@@ -302,6 +332,28 @@ class TeamsServices {
             const teamMembers = await teamsDal.getSingleTeam(client, teamExists.team_id);
 
             return { teamMembers };
+        } catch (err) {
+            if (err instanceof CustomError)
+                throw err;
+            else
+                throw new CustomError(statusCodes.INTERNAL_SERVER_ERROR, "Something went wrong", err.message);
+        } finally {
+            client.release();
+        }
+    }
+
+    async getTeamProjects(team_id) {
+        const client = await pool.connect();
+        try {
+            const teamExists = await teamsDal.checkIfTeamExists(client, team_id);
+
+            if (!teamExists) {
+                throw new CustomError(statusCodes.BAD_REQUEST, "Team does not exist", "Team does not exist in the database.");
+            }
+
+            const projects = await teamsDal.getTeamProjects(client, team_id);
+
+            return projects;
         } catch (err) {
             if (err instanceof CustomError)
                 throw err;

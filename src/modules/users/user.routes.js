@@ -14,6 +14,9 @@ import {
     deleteUser,
 } from './user.controller.js';
 import {
+    getUserTasks
+} from '../tasks/tasks.controller.js';
+import {
     changeUserRoleSchema,
     getSingleUserSchema,
     loginSchema,
@@ -43,10 +46,17 @@ router
     .get(verifyToken, checkPermission(["ADMIN"]), validate(changeUserRoleSchema, { keyByField: true }), changeUserRole);
 
 router
+    .route("/get-tasks")
+    .get(verifyToken, getUserTasks);
+
+router
     .route("/:id")
     .get(verifyToken, validate(getSingleUserSchema, { keyByField: true }), getSingleUser)
     .patch(verifyToken, validate(updateUserSchema, { keyByField: true }), updateUser)
-    .delete(verifyToken, checkPermission(["ADMIN"]), validate(getSingleUserSchema, { keyByField: true }), deleteUser)
+    .delete(verifyToken, checkPermission(["ADMIN"]), validate(getSingleUserSchema, { keyByField: true }), deleteUser);
+
+
+
 
 //TODO: Add the route for user to change the password
 
