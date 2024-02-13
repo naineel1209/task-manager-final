@@ -1,21 +1,21 @@
 module.exports = {
-    openapi: "3.0.0",
     info: {
-        title: "Project Management API",
+        title: "TaskManager API",
         version: "1.0.0",
         description: "API for managing projects, tasks and comments",
         contact: {
             name: "Naineel Soyantar",
             email: "naineel.soyantar@zuru.com",
 
-        }
-    },
-    servers: [
-        {
-            url: "http://localhost:3000",
-            description: "Development server"
         },
-    ],
+        host: "localhost:3000",
+        basePath: "/",
+        schemes: [
+            "http"
+        ],
+        swagger: "2.0"
+    },
+    servers: [],
     apis: ["./src/modules/**/*.routes.js"],
 }
 

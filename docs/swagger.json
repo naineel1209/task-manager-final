@@ -1,23 +1,24 @@
 {
-  "openapi": "3.0.0",
   "info": {
-    "title": "Project Management API",
+    "title": "TaskManager API",
     "version": "1.0.0",
     "description": "API for managing projects, tasks and comments",
     "contact": {
       "name": "Naineel Soyantar",
       "email": "naineel.soyantar@zuru.com"
-    }
+    },
+    "host": "localhost:3000",
+    "basePath": "/",
+    "schemes": [
+      "http"
+    ],
+    "swagger": "2.0"
   },
-  "servers": [
-    {
-      "url": "http://localhost:3000",
-      "description": "Development server"
-    }
-  ],
+  "servers": [],
   "apis": [
     "./src/modules/**/*.routes.js"
   ],
+  "swagger": "2.0",
   "paths": {
     "/projects": {
       "get": {
@@ -27,30 +28,76 @@
         ]
       }
     },
-    "/user/register": {
+    "teams/register": {
       "post": {
-        "summary": "Register a new user",
+        "description": "Register a user",
         "tags": [
           "User"
+        ],
+        "produces": [
+          "application/json"
         ],
         "consumes": [
           "application/json"
         ],
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": null
-          },
-          "schema": {
-            "type": "object",
-            "properties": {
-              "username": null
+        "parameters": [
+          {
+            "in": "body",
+            "name": "Request body",
+            "description": "User details",
+            "schema": {
+              "$ref": "contracts/user.json#/registerUser"
+            },
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "GET request successful",
+            "schema": {
+              "$ref": "contracts/user.json#/registerUserResponse"
+            }
+          }
+        }
+      }
+    },
+    "user/register": {
+      "post": {
+        "description": "Register a user",
+        "tags": [
+          "User"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "consumes": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "in": "body",
+            "name": "Request body",
+            "description": "User details",
+            "schema": {
+              "$ref": "contracts/user.json#/registerUser"
+            },
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "GET request successful",
+            "schema": {
+              "$ref": "contracts/user.json#/registerUserResponse"
             }
           }
         }
       }
     }
   },
-  "components": {},
+  "definitions": {},
+  "responses": {},
+  "parameters": {},
+  "securityDefinitions": {},
   "tags": []
 }

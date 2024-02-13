@@ -1,12 +1,10 @@
-import { Router } from 'express';
-import { validate } from 'express-validation';
+import { Router } from "express";
+import { validate } from "express-validation";
 import {
     checkPermission,
     verifyToken,
-} from '../../middlewares/user.middleware.js';
-import {
-    getUserTasks
-} from '../tasks/tasks.controller.js';
+} from "../../middlewares/user.middleware.js";
+import { getUserTasks } from "../tasks/tasks.controller.js";
 import {
     changePassword,
     changeUserRole,
@@ -15,8 +13,8 @@ import {
     loginUser,
     logoutUser,
     registerUser,
-    updateUser
-} from './user.controller.js';
+    updateUser,
+} from "./user.controller.js";
 import {
     changePasswordSchema,
     changeUserRoleSchema,
@@ -25,7 +23,7 @@ import {
     logoutSchema,
     registerSchema,
     updateUserSchema,
-} from './user.schema.js';
+} from "./user.schema.js";
 
 const router = Router({ mergeParams: true });
 
@@ -33,19 +31,28 @@ const router = Router({ mergeParams: true });
 
 /**
  * @swagger
- * /user/register:
+ *
+ * user/register:
  *  post:
- *   summary: Register a new user
- *   tags: [User]
- *   consumes:
- *    - application/json
- *   requestBody:
- *     required: true
- *     content:
- *      application/json:
- *     schema: 
- *      $ref: '
- *    
+ *    description: Register a user
+ *    tags:
+ *      - User
+ *    produces:
+ *      - application/json
+ *    consumes:
+ *      - application/json
+ *    parameters:
+ *      - in: body
+ *        name: Request body
+ *        description: User details
+ *        schema:
+ *          $ref: 'contracts/user.json#/registerUser'
+ *        required: true
+ *    responses:
+ *      '200':
+ *          description: GET request successful
+ *          schema:
+ *            $ref: 'contracts/user.json#/registerUserResponse'
  */
 router
     .route("/register")
@@ -61,21 +68,40 @@ router
 
 router
     .route("/change-user-role")
-    .get(verifyToken, checkPermission(["ADMIN"]), validate(changeUserRoleSchema, { keyByField: true }), changeUserRole);
+    .get(
+        verifyToken,
+        checkPermission(["ADMIN"]),
+        validate(changeUserRoleSchema, { keyByField: true }),
+        changeUserRole
+    );
 
-router
-    .route("/get-tasks")
-    .get(verifyToken, getUserTasks);
+router.route("/get-tasks").get(verifyToken, getUserTasks);
 
-//TODO: Add the route for user to change the password
 router
     .route("/change-password")
-    .patch(verifyToken, validate(changePasswordSchema, { keyByField: true }), changePassword);
+    .patch(
+        verifyToken,
+        validate(changePasswordSchema, { keyByField: true }),
+        changePassword
+    );
 
 router
     .route("/:id")
-    .get(verifyToken, validate(getSingleUserSchema, { keyByField: true }), getSingleUser)
-    .patch(verifyToken, validate(updateUserSchema, { keyByField: true }), updateUser)
-    .delete(verifyToken, checkPermission(["ADMIN"]), validate(getSingleUserSchema, { keyByField: true }), deleteUser);
+    .get(
+        verifyToken,
+        validate(getSingleUserSchema, { keyByField: true }),
+        getSingleUser
+    )
+    .patch(
+        verifyToken,
+        validate(updateUserSchema, { keyByField: true }),
+        updateUser
+    )
+    .delete(
+        verifyToken,
+        checkPermission(["ADMIN"]),
+        validate(getSingleUserSchema, { keyByField: true }),
+        deleteUser
+    );
 
 export default router;

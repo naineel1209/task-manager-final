@@ -7,7 +7,9 @@ import { ValidationError } from "express-validation";
 import { createServer } from "http";
 import statusCodes from "http-status-codes";
 import swaggerUi from "swagger-ui-express";
-import swaggerJson from "./docs/swagger.json" assert { type: "json" };
+import swaggerJSDoc from "swagger-jsdoc";
+import options from "./docs/swaggerDef.cjs";
+import swaaggerJson from "./docs/swagger.json" assert { type: "json" };
 config();
 
 //! loggers
@@ -19,6 +21,7 @@ import privateRoutes from "./src/modules/private/private.routes.js";
 import projectsRoutes from "./src/modules/projects/projects.routes.js";
 import teamsRoutes from "./src/modules/teams/teams.routes.js";
 import authRoutes from "./src/modules/users/user.routes.js";
+import { assert } from "console";
 
 const app = express();
 const server = createServer(app);
@@ -36,8 +39,9 @@ app.use(cors({
 }));
 
 //! Swagger docs route
-app.use("/docs", express.static("docs"));
-app.use("/docs", swaggerUi.serve, swaggerUi.setup(swaggerJson));
+// const spec = swaggerJSDoc(options);
+app.use("/docs", express.static("./docs"));
+app.use("/docs", swaggerUi.serve, swaggerUi.setup(swaaggerJson));
 
 
 //! Logger Middleware

@@ -26,6 +26,31 @@ const router = Router({ mergeParams: true });
 
 //!PATH - /teams
 
+/**
+ * @swagger
+ *
+ * teams/register:
+ *  post:
+ *    description: Register a user
+ *    tags:
+ *      - User
+ *    produces:
+ *      - application/json
+ *    consumes:
+ *      - application/json
+ *    parameters:
+ *      - in: body
+ *        name: Request body
+ *        description: User details
+ *        schema:
+ *          $ref: 'contracts/user.json#/registerUser'
+ *        required: true
+ *    responses:
+ *      '200':
+ *          description: GET request successful
+ *          schema:
+ *            $ref: 'contracts/user.json#/registerUserResponse'
+ */
 router
     .route("/")
     .get(verifyToken, getTeams);

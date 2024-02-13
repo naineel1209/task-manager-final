@@ -33,7 +33,8 @@ class TasksServices {
                 throw new CustomError(400, "Bad Request", "Due date should be after today");
             }
 
-            data.dueDate = format(new Date(data.dueDate), "yyyy-MM-dd");
+            if (data.dueDate)
+                data.dueDate = format(new Date(data.dueDate), "yyyy-MM-dd");
 
             const task = await tasksDal.createTask(client, project_id, data);
             console.log(task);
@@ -110,7 +111,8 @@ class TasksServices {
                 throw new CustomError(400, "Bad Request", "Due date should be after today");
             }
 
-            data.due_date = format(new Date(data.due_date), "yyyy-MM-dd");
+            if (data.due_date)
+                data.due_date = format(new Date(data.due_date), "yyyy-MM-dd");
 
             let statusUpdate = (data.status && data.status !== taskDetails.status) ? true : false;
 
