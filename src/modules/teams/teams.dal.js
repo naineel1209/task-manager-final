@@ -95,7 +95,24 @@ class TeamsDal {
      */
     async getTeams(client) {
         try {
-            const getTeamsSql = "SELECT * FROM teams";
+            const getTeamsSql = `select 
+            t.id as team_id,
+            t.name as team_name,
+            t.tl_id, t.admin_id, 
+            u1.first_name as tl_first_name,
+            u1.last_name as tl_last_name, 
+            u1.username as tl_username, 
+            u2.first_name as admin_first_name,
+            u2.last_name as admin_last_name,
+            u2.username as admin_username 
+            from 
+            teams t 
+            inner join 
+            users u1 
+            on t.tl_id = u1.id
+            inner join 
+            users u2 
+            on t.admin_id = u2.id;`;
             const teams = await client.query(getTeamsSql);
 
             return teams.rows;
@@ -253,7 +270,26 @@ class TeamsDal {
      */
     async checkIfUserIsInAnyTeam(client, user_id) {
         try {
-            const checkIfUserIsInAnyTeamSql = "SELECT * FROM teamsusersmapping WHERE user_id = $1";
+            const checkIfUserIsInAnyTeamSql = `
+            select
+            tum.*, u3.first_name as first_name, u3.last_name as last_name, u3.username as username,
+            t.name as team_name, t.tl_id, t.admin_id, u1.first_name as tl_first_name, u1.last_name as tl_last_name,
+            u1.username as tl_username, u2.first_name as admin_first_name, u2.last_name as admin_last_name, u2.username as admin_username
+            from
+            teamsusersmapping tum
+            inner join
+            teams t
+            on tum.team_id = t.id
+            inner join
+            users u1
+            on t.tl_id = u1.id
+            inner join
+            users u2
+            on t.admin_id = u2.id
+            inner join
+            users u3
+            on tum.user_id = u3.id
+            WHERE tum.user_id = $1`;
             const checkIfUserIsInAnyTeamValues = [user_id];
 
             const userIsInAnyTeam = await client.query(checkIfUserIsInAnyTeamSql, checkIfUserIsInAnyTeamValues);
@@ -290,9 +326,30 @@ class TeamsDal {
         }
     }
 
+    /**
+     * returns the team projects
+     * @param {*} client 
+     * @param {*} team_id 
+     * @returns 
+     */
     async getTeamProjects(client, team_id) {
         try {
-            const getTeamProjectsSql = "SELECT * FROM projects WHERE team_id = $1";
+            const getTeamProjectsSql = `
+            select 
+            p.*,
+            t."name" as team_name,
+            u.first_name as admin_first_name,
+            u.last_name as admin_last_name,
+            u.username as admin_username
+            from
+            projects p
+            inner join
+            teams t
+            on p.team_id = t.id 
+            inner join
+            users u
+            on p.admin_id = u.id 
+            WHERE p.team_id = $1`;
             const getTeamProjectsValues = [team_id];
 
             const teamProjects = await client.query(getTeamProjectsSql, getTeamProjectsValues);

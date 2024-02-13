@@ -6,7 +6,7 @@ const createProject = async (req, res) => {
 
     const createProject = await projectsServices.createProject(title, description, team_id, req.user.id);
 
-    res.status(statusCodes.CREATED).json({
+    return res.status(statusCodes.CREATED).json({
         createProject
     });
 }

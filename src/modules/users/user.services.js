@@ -131,6 +131,7 @@ class UserServices {
                 throw new CustomError(statusCodes.INTERNAL_SERVER_ERROR, "Something went wrong", "Something went wrong while logging out. Please try again later.");
             }
 
+            //successfully logged out
             return;
         } catch (err) {
             if (err instanceof CustomError) {
@@ -156,10 +157,6 @@ class UserServices {
     async changeRole(id, role) {
         const client = await pool.connect();
         try {
-            /**
-             //TODO: Implement the temporary ban on the user role change until all projects with TL are completed
-             */
-
             //Check if the user exists
             const user = await mainDal.checkUserExistsById(client, id);
 
@@ -284,6 +281,14 @@ class UserServices {
     }
 
 
+
+    /**
+     * changes the password - internally calls the update user call
+     * @param {*} user_id 
+     * @param {*} oldPassword 
+     * @param {*} newPassword 
+     * @returns 
+     */
     async changePassword(user_id, oldPassword, newPassword) {
         const client = await pool.connect();
         try {
@@ -299,7 +304,7 @@ class UserServices {
 
             const updatedUser = await userDal.updateUser(client, user_id, { password: hashedNewPassword });
 
-            return updatedUser;
+            return { message: "Password changed" };
         } catch (err) {
             if (err instanceof CustomError) {
                 throw err;

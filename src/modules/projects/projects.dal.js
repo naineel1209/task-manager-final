@@ -14,7 +14,7 @@ class ProjectsDal {
      */
     async createProject(client, title, description, team_id, admin_id) {
         try {
-            const createProjectSql = "INSERT INTO projects (title, description, team_id, admin_id) VALUES ($1, $2, $3, $4) RETURNING *";
+            const createProjectSql = "INSERT INTO projects (title, description, team_id, admin_id) VALUES ($1, $2, $3, $4) RETURNING *;";
             const createProjectValues = [title, description, team_id, admin_id];
 
             const result = await client.query(createProjectSql, createProjectValues);
@@ -80,7 +80,22 @@ class ProjectsDal {
 
     async getProject(client, project_id) {
         try {
-            const getProjectSql = "SELECT * FROM projects WHERE id = $1";
+            const getProjectSql = `
+            select 
+            p.*, 
+            t."name" as team_name, 
+            u1.first_name as admin_first_name, 
+            u1.last_name as admin_last_name, 
+            u1.username as admin_username 
+            from 
+            projects p 
+            inner join 
+            teams t 
+            on p.team_id = t.id 
+            inner join 
+            users u1 
+            on p.admin_id = u1.id 
+            WHERE p.id = $1`;
             const getProjectValues = [project_id];
 
             const result = await client.query(getProjectSql, getProjectValues);
@@ -98,7 +113,22 @@ class ProjectsDal {
 
     async getAllProjects(client) {
         try {
-            const getAllProjectsSql = "SELECT * FROM projects";
+            const getAllProjectsSql = `            
+            select 
+            p.*, 
+            t."name" as team_name, 
+            u1.first_name as admin_first_name, 
+            u1.last_name as admin_last_name, 
+            u1.username as admin_username 
+            from 
+            projects p 
+            inner join 
+            teams t 
+            on p.team_id = t.id 
+            inner join 
+            users u1 
+            on p.admin_id = u1.id 
+            WHERE p.id = $1`;
             const result = await client.query(getAllProjectsSql);
 
             return result.rows;

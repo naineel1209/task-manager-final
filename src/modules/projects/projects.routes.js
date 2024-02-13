@@ -23,6 +23,15 @@ import tasksRoutes from "../tasks/tasks.routes.js";
 
 const router = Router();
 
+//!Path - /projects
+
+/**
+ * @swagger
+ * /projects:
+ *  get:
+ *    summary: Get all projects
+ *    tags: [Projects]
+ */
 router
     .route("/")
     .get(verifyToken, getAllProjects) //TODO:  Add inner joins to all the get requests

@@ -9,7 +9,6 @@ import statusCodes from "http-status-codes";
 
 class TeamsServices {
 
-
     /**
      * service to create a new team
      * @date 2/8/2024 - 10:38:52 AM
@@ -79,7 +78,7 @@ class TeamsServices {
             //delete the team
             const deletedTeam = await teamsDal.deleteTeam(client, team_id);
 
-            return deletedTeam;
+            return (deletedTeam) ? "Team deleted successfully" : "Team could not be deleted. Please try again later.";
         } catch (err) {
             if (err instanceof CustomError)
                 throw err;
@@ -304,7 +303,7 @@ class TeamsServices {
 
             const team = await teamsDal.getSingleTeam(client, team_id);
 
-            return { team, ...teamExists, team_lead: userExists.username };
+            return { team, ...teamExists, tl_username: userExists.username, tl_first_name: userExists.first_name, tl_last_name: userExists.last_name };
         } catch (err) {
             if (err instanceof CustomError)
                 throw err;
@@ -342,6 +341,11 @@ class TeamsServices {
         }
     }
 
+    /**
+     * GET teams - projects
+     * @param {*} team_id 
+     * @returns 
+     */
     async getTeamProjects(team_id) {
         const client = await pool.connect();
         try {

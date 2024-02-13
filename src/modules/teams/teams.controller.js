@@ -19,7 +19,7 @@ const deleteTeam = async (req, res) => {
 
     const deletedTeam = await teamsServices.deleteTeam(team_id, req.user.id, req.user.role);
 
-    return res.status(statusCodes.OK).send(deletedTeam);
+    return res.status(statusCodes.OK).send({ message: deletedTeam });
 }
 
 const updateTeam = async (req, res) => {

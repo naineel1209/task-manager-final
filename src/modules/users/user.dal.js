@@ -156,12 +156,12 @@ class UserDal {
 
             //remove the last comma and space
             updateUserSql = updateUserSql.slice(0, -2);
-            updateUserSql += ` WHERE id = $${count} RETURNING *`;
+            updateUserSql += ` WHERE id = $${count};`;
             updateUserValues.push(id);
 
             const result = await client.query(updateUserSql, updateUserValues);
 
-            return result.rows[0];
+            return result.rowCount === 1;
         } catch (err) {
             if (err instanceof CustomError)
                 throw err;

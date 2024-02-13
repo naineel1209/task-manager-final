@@ -87,7 +87,7 @@ class CommentsServices {
     }
 
 
-    async deleteComment(comment_id) {
+    async deleteComment(comment_id, user_role) {
         const client = await pool.connect();
 
         try {
@@ -99,7 +99,7 @@ class CommentsServices {
             }
 
             // check if the comment_creator and current user is the same
-            if (user_id !== commentDetails.user_id) {
+            if (user_id !== commentDetails.user_id && user_role !== "ADMIN") {
                 throw new CustomError(401, "Unauthorized", "You are not authorized to update the comment");
             }
 

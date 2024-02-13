@@ -6,17 +6,19 @@ import "express-async-errors";
 import { ValidationError } from "express-validation";
 import { createServer } from "http";
 import statusCodes from "http-status-codes";
+import swaggerUi from "swagger-ui-express";
+import swaggerJson from "./docs/swagger.json" assert { type: "json" };
 config();
 
 //! loggers
 import logger from "./config/winston.config.js";
 
 //! Routes
+import commentsRoutes from "./src/modules/comments/comments.routes.js";
 import privateRoutes from "./src/modules/private/private.routes.js";
 import projectsRoutes from "./src/modules/projects/projects.routes.js";
 import teamsRoutes from "./src/modules/teams/teams.routes.js";
 import authRoutes from "./src/modules/users/user.routes.js";
-import commentsRoutes from "./src/modules/comments/comments.routes.js";
 
 const app = express();
 const server = createServer(app);
@@ -32,6 +34,11 @@ app.use(cors({
     origin: "http://localhost:3000",
     credentials: true
 }));
+
+//! Swagger docs route
+app.use("/docs", express.static("docs"));
+app.use("/docs", swaggerUi.serve, swaggerUi.setup(swaggerJson));
+
 
 //! Logger Middleware
 app.use((req, res, next) => {

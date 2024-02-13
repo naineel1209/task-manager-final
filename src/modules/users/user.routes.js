@@ -31,6 +31,22 @@ const router = Router({ mergeParams: true });
 
 //!PATH - /user
 
+/**
+ * @swagger
+ * /user/register:
+ *  post:
+ *   summary: Register a new user
+ *   tags: [User]
+ *   consumes:
+ *    - application/json
+ *   requestBody:
+ *     required: true
+ *     content:
+ *      application/json:
+ *     schema: 
+ *      $ref: '
+ *    
+ */
 router
     .route("/register")
     .post(validate(registerSchema, { keyByField: true }), registerUser);

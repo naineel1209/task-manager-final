@@ -11,7 +11,16 @@ class TasksDal {
     async getProjectTeamDetails(client, project_id) {
         //get the project info and the team info - 
         try {
-            const projectTeamDetailsSql = "SELECT p.id as project_id, p.*, t.* FROM projects p JOIN teams t ON p.team_id = t.id WHERE p.id = $1";
+            const projectTeamDetailsSql = `
+            SELECT 
+            p.id as project_id, 
+            p.*, t.* 
+            FROM 
+            projects p 
+            JOIN 
+            teams t 
+            ON p.team_id = t.id 
+            WHERE p.id = $1`;
             const projectTeamDetailsValues = [project_id];
             const projectTeamDetails = await client.query(projectTeamDetailsSql, projectTeamDetailsValues);
 
@@ -34,6 +43,7 @@ class TasksDal {
     async createTask(client, project_id, { title, description, categories, assignedTo, dueDate }) {
         try {
             const createTaskSql = "INSERT INTO tasks (title, description, categories, assigned_to_id, project_id, due_date) VALUES ($1, $2, $3, $4, $5, $6) RETURNING *";
+
             const createTaskValues = [title, description, JSON.stringify(categories), assignedTo, project_id, dueDate];
 
             const task = await client.query(createTaskSql, createTaskValues);
@@ -57,7 +67,31 @@ class TasksDal {
      */
     async getProjectTasks(client, project_id) {
         try {
-            const getProjectTasksSql = "SELECT * FROM tasks WHERE project_id = $1";
+            const getProjectTasksSql = `
+            select ts.*, 
+            u2.first_name as "assigned_to_first_name",
+            u2.last_name as "assigned_to_last_name", 
+            u2.username as "assigned_to_username", 
+            p.title as "project_title", 
+            p.description as "project_description", 
+            t."name" as team_name, 
+            u1.first_name as admin_first_name, 
+            u1.last_name as admin_last_name, 
+            u1.username as admin_username 
+            from 
+            tasks ts 
+            inner join 
+            projects p 
+            inner join
+            teams t 
+            on p.team_id = t.id
+            inner join 
+            users u1 on p.admin_id = u1.id) 
+            on ts.project_id = p.id 
+            inner join 
+            users u2 
+            on ts.assigned_to_id = u2.id 
+            WHERE ts.project_id = $1`;
             const getProjectTasksValues = [project_id];
 
             const projectTasks = await client.query(getProjectTasksSql, getProjectTasksValues);
@@ -81,7 +115,25 @@ class TasksDal {
      */
     async getTaskDetails(client, project_id, task_id) {
         try {
-            const getTaskDetailsSql = "SELECT * FROM tasks WHERE project_id = $1 AND id = $2";
+            const getTaskDetailsSql = `            
+            select 
+			t.*, 
+            u2.first_name as "assigned_to_first_name",
+            u2.last_name as "assigned_to_last_name",
+            u2.username as "assigned_to_username",
+            p.title as "project_title",
+            p.description as "project_description",
+            t2."name" as team_name,
+			u.first_name as admin_first_name,
+			u.last_name as admin_last_name,
+			u.username as admin_username
+            from 
+            tasks t 
+            join projects p on p.id = t.project_id 
+            join teams t2 ON t2.id = p.team_id 
+            join users u on u.id = p.admin_id 
+            join users u2 on u2.id = t.assigned_to_id
+            WHERE t.project_id = $1 AND t.id = $2`;
             const getTaskDetailsValues = [project_id, task_id];
 
             const taskDetails = await client.query(getTaskDetailsSql, getTaskDetailsValues);
@@ -164,7 +216,25 @@ class TasksDal {
 
     async getUserTasks(client, user_id) {
         try {
-            const getUserTasksSql = "SELECT * FROM tasks WHERE assigned_to_id = $1;";
+            const getUserTasksSql = `            
+            select 
+			t.*, 
+            u2.first_name as "assigned_to_first_name",
+            u2.last_name as "assigned_to_last_name",
+            u2.username as "assigned_to_username",
+            p.title as "project_title",
+            p.description as "project_description",
+            t2."name" as team_name,
+			u.first_name as admin_first_name,
+			u.last_name as admin_last_name,
+			u.username as admin_username
+            from 
+            tasks t 
+            join projects p on p.id = t.project_id 
+            join teams t2 ON t2.id = p.team_id 
+            join users u on u.id = p.admin_id 
+            join users u2 on u2.id = t.assigned_to_id
+            WHERE t.assigned_to_id = $1;`;
             const getUserTasksValues = [user_id];
 
             const tasks = await client.query(getUserTasksSql, getUserTasksValues);
