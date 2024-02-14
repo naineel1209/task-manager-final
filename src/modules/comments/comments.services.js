@@ -87,7 +87,7 @@ class CommentsServices {
     }
 
 
-    async deleteComment(comment_id, user_role) {
+    async deleteComment(comment_id, user_id, user_role) {
         const client = await pool.connect();
 
         try {

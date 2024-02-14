@@ -1,0 +1,42 @@
+{
+    "commentsResponse": {
+        "type": "array",
+        "items": {
+            "$ref": "./definitions.json#/commentsResponse"
+        }
+    },
+    "createCommentResponse": {
+        "type": "object",
+        "properties": {
+            "id": {
+                "type": "string",
+                "description": "The unique identifier of the created comment."
+            },
+            "title": {
+                "type": "string",
+                "description": "The title of the created comment."
+            },
+            "description": {
+                "type": "string",
+                "description": "The description of the created comment."
+            },
+            "user_id": {
+                "type": "string",
+                "description": "The unique identifier of the user who posted the comment."
+            },
+            "task_id": {
+                "type": "string",
+                "description": "The unique identifier of the task to which the comment belongs."
+            },
+            "created_at": {
+                "type": "string",
+                "format": "date-time",
+                "description": "The timestamp when the comment was created."
+            },
+            "edited": {
+                "type": "boolean",
+                "description": "Indicates whether the comment has been edited or not."
+            }
+        }
+    }
+}

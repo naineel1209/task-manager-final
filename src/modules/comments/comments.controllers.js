@@ -21,7 +21,7 @@ export const patchComment = async (req, res) => {
 }
 
 export const deleteComment = async (req, res) => {
-    const deletedComment = await commentsServices.deleteComment(req.params.comment_id, req.user.role);
+    const deletedComment = await commentsServices.deleteComment(req.params.comment_id, req.user.id, req.user.role);
 
-    return res.status(statusCodes.OK).send({ message: deleteComment });
+    return res.status(statusCodes.OK).send({ message: deletedComment });
 }

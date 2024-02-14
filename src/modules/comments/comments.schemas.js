@@ -26,7 +26,7 @@ const patchCommentsSchema = {
 const deleteCommentsSchema = {
     params: Joi.object({
         task_id: Joi.string().required(),
-        comment_i: Joi.string().required(),
+        comment_id: Joi.string().required(),
     })
 }
 

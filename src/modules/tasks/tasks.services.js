@@ -118,7 +118,6 @@ class TasksServices {
 
             const task = await tasksDal.updateTask(client, project_id, task_id, data);
 
-            console.log(statusUpdate);
             //add the details to the activity log
             if (statusUpdate) {
                 await activity_logsDal.addToLog(client, task_id, updater_id, new Date(), task.status);

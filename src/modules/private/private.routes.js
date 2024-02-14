@@ -4,6 +4,24 @@ const router = Router({ mergeParams: true });
 
 //!PATH - /private
 
+/**
+ * @swagger
+ * 
+ * /private:
+ *  get:
+ *   description: Get all private data
+ *   tags:
+ *      - Private
+ *   produces:
+ *     - application/json
+ *   consumes:
+ *    - application/json
+ *   responses:
+ *    '200':
+ *      description: GET request successful
+ *    '40X':
+ *      description: Error in the request  
+ */
 router
     .route("/")
     .get(verifyToken, (req, res) => {

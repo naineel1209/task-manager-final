@@ -86,7 +86,7 @@ class TasksDal {
             teams t 
             on p.team_id = t.id
             inner join 
-            users u1 on p.admin_id = u1.id) 
+            users u1 on p.admin_id = u1.id
             on ts.project_id = p.id 
             inner join 
             users u2 

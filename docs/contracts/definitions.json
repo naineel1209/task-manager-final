@@ -274,5 +274,144 @@
                 "description": "The timestamp when the project was created."
             }
         }
+    },
+    "task": {
+        "type": "object",
+        "properties": {
+            "title": {
+                "type": "string",
+                "description": "The title of the task."
+            },
+            "description": {
+                "type": "string",
+                "description": "The description of the task."
+            },
+            "categories": {
+                "type": "array",
+                "items": {
+                    "type": "string"
+                },
+                "description": "The categories associated with the task."
+            },
+            "assignedTo": {
+                "type": "string",
+                "description": "The unique identifier of the user to whom the task is assigned."
+            },
+            "dueDate": {
+                "type": "string",
+                "format": "date",
+                "description": "The due date of the task."
+            }
+        }
+    },
+    "taskResponse": {
+        "type": "object",
+        "properties": {
+            "id": {
+                "type": "string",
+                "description": "The unique identifier of the task."
+            },
+            "title": {
+                "type": "string",
+                "description": "The title of the task."
+            },
+            "description": {
+                "type": "string",
+                "description": "The description of the task."
+            },
+            "categories": {
+                "type": "array",
+                "items": {
+                    "type": "string"
+                },
+                "description": "The categories associated with the task."
+            },
+            "status": {
+                "type": "string",
+                "description": "The status of the task."
+            },
+            "assigned_to_id": {
+                "type": "string",
+                "description": "The unique identifier of the user to whom the task is assigned."
+            },
+            "project_id": {
+                "type": "string",
+                "description": "The unique identifier of the project to which the task belongs."
+            },
+            "due_date": {
+                "type": "string",
+                "format": "date-time",
+                "description": "The due date of the task."
+            },
+            "created_at": {
+                "type": "string",
+                "format": "date-time",
+                "description": "The timestamp when the task was created."
+            }
+        }
+    },
+    "comment": {
+        "type": "object",
+        "properties": {
+            "title": {
+                "type": "string",
+                "description": "The title of the comment."
+            },
+            "description": {
+                "type": "string",
+                "description": "The description of the comment."
+            }
+        }
+    },
+    "commentsResponse": {
+        "type": "object",
+        "properties": {
+            "id": {
+                "type": "string",
+                "description": "The unique identifier of the comment."
+            },
+            "title": {
+                "type": "string",
+                "description": "The title of the comment."
+            },
+            "description": {
+                "type": "string",
+                "description": "The description of the comment."
+            },
+            "user_id": {
+                "type": "string",
+                "description": "The unique identifier of the user who posted the comment."
+            },
+            "task_id": {
+                "type": "string",
+                "description": "The unique identifier of the task to which the comment belongs."
+            },
+            "created_at": {
+                "type": "string",
+                "format": "date-time",
+                "description": "The timestamp when the comment was created."
+            },
+            "edited": {
+                "type": "boolean",
+                "description": "Indicates whether the comment has been edited or not."
+            },
+            "first_name": {
+                "type": "string",
+                "description": "The first name of the user who posted the comment."
+            },
+            "last_name": {
+                "type": "string",
+                "description": "The last name of the user who posted the comment."
+            },
+            "username": {
+                "type": "string",
+                "description": "The username of the user who posted the comment."
+            },
+            "user_email": {
+                "type": "string",
+                "format": "email",
+                "description": "The email address of the user who posted the comment."
+            }
+        }
     }
 }

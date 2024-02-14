@@ -1,0 +1,9 @@
+{
+    "getProjectTasksResponse": {
+        "type": "array",
+        "items": {
+            "$ref": "./definitions.json#/userTasks"
+        }
+    },
+    "updateTask": {}
+}
