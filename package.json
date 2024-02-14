@@ -7,7 +7,7 @@
     "start": "node --no-warnings --experimental-modules --es-module-specifier-resolution=node app.js",
     "dev": "nodemon --no-warnings --experimental-modules --es-module-specifier-resolution=node app.js",
     "docs": "swagger-jsdoc -d docs/swaggerDef.cjs src/modules/**/*.routes.js -o docs/swagger.json",
-    "test": "mocha --require-esm --exit --recursive"
+    "test": "mocha ./test/**/*.test.js --exit"
   },
   "type": "module",
   "author": "naineel1209",
@@ -15,6 +15,7 @@
   "dependencies": {
     "bcrypt": "^5.1.1",
     "chai": "^5.1.0",
+    "chai-http": "^4.4.0",
     "cookie-parser": "^1.4.6",
     "cors": "^2.8.5",
     "date-fns": "^3.3.1",
@@ -28,6 +29,7 @@
     "jsonwebtoken": "^9.0.2",
     "mocha": "^10.3.0",
     "morgan": "^1.10.0",
+    "nyc": "^15.1.0",
     "pg": "^8.11.3",
     "swagger-jsdoc": "^6.2.8",
     "swagger-ui-express": "^5.0.0",
@@ -35,6 +37,7 @@
     "zsh": "^0.0.1"
   },
   "devDependencies": {
-    "@types/express": "^4.17.21"
+    "@types/express": "^4.17.21",
+    "sinon": "^17.0.1"
   }
 }

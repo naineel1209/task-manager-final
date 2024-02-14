@@ -1,9 +1,9 @@
 import { format, isAfter } from "date-fns";
-import pool from "../../../config/db.config";
+import pool from "../../../config/db.config.js";
 import CustomError from "../../errors/CustomError.js";
 import teamsDal from "../teams/teams.dal.js";
-import tasksDal from "./tasks.dal";
 import activity_logsDal from "./activity_logs.dal.js";
+import tasksDal from "./tasks.dal.js";
 
 class TasksServices {
 

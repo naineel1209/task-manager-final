@@ -1,5 +1,5 @@
 import statusCodes from "http-status-codes";
-import projectsServices from "./projects.services";
+import projectsServices from "./projects.services.js";
 
 const createProject = async (req, res) => {
     const { title, description, team_id } = req.body;

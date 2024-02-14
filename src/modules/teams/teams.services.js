@@ -1,6 +1,3 @@
-
-
-
 import pool from '../../../config/db.config.js';
 import mainDal from '../main/main.dal.js';
 import teamsDal from './teams.dal.js';

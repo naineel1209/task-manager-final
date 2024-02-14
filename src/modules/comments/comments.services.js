@@ -1,7 +1,6 @@
-import { cli } from "winston/lib/winston/config";
-import pool from "../../../config/db.config";
-import CustomError from "../../errors/CustomError";
-import commentsDal from "./comments.dal";
+import pool from "../../../config/db.config.js";
+import CustomError from "../../errors/CustomError.js";
+import commentsDal from "./comments.dal.js";
 
 class CommentsServices {
 

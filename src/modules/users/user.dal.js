@@ -1,4 +1,3 @@
-import pool from '../../../config/db.config.js';
 import CustomError from '../../errors/CustomError.js';
 import statusCodes from "http-status-codes"
 

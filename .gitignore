@@ -25,3 +25,4 @@ Thumbs.db
 
 # Compiled binary addons
 ffmpeg_impl.js
+.nyc_output/

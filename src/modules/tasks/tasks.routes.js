@@ -1,6 +1,6 @@
 import { Router } from "express";
 import { validate } from "express-validation";
-import { checkPermission, verifyToken } from "../../middlewares/user.middleware";
+import { checkPermission, verifyToken } from "../../middlewares/user.middleware.js";
 import {
     createTask,
     deleteTask,

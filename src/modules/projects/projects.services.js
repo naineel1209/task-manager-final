@@ -1,6 +1,6 @@
-import pool from "../../../config/db.config";
-import CustomError from "../../errors/CustomError";
-import projectsDal from "./projects.dal";
+import pool from "../../../config/db.config.js";
+import CustomError from "../../errors/CustomError.js";
+import projectsDal from "./projects.dal.js";
 
 class ProjectServices {
 

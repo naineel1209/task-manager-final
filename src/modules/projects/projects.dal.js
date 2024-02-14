@@ -1,5 +1,5 @@
 import statusCodes from "http-status-codes";
-import CustomError from "../../errors/CustomError";
+import CustomError from "../../errors/CustomError.js";
 
 class ProjectsDal {
 

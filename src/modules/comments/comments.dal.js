@@ -1,4 +1,4 @@
-import CustomError from "../../errors/CustomError";
+import CustomError from "../../errors/CustomError.js";
 
 class CommentsDal {
 

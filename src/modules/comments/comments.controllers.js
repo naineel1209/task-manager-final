@@ -1,5 +1,5 @@
 import statusCodes from "http-status-codes";
-import commentsServices from "./comments.services";
+import commentsServices from "./comments.services.js";
 
 export const getComments = async (req, res) => {
     const comments = await commentsServices.getComments(req.params.task_id);
