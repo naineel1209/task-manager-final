@@ -1,0 +1,278 @@
+{
+    "userTasks": {
+        "type": "object",
+        "properties": {
+            "id": {
+                "type": "string",
+                "description": "The unique identifier of the task."
+            },
+            "title": {
+                "type": "string",
+                "description": "The title of the task."
+            },
+            "description": {
+                "type": "string",
+                "description": "The description of the task."
+            },
+            "categories": {
+                "type": "array",
+                "items": {
+                    "type": "string"
+                },
+                "description": "The categories associated with the task."
+            },
+            "status": {
+                "type": "string",
+                "description": "The status of the task."
+            },
+            "assigned_to_id": {
+                "type": "string",
+                "description": "The unique identifier of the user to whom the task is assigned."
+            },
+            "project_id": {
+                "type": "string",
+                "description": "The unique identifier of the project to which the task belongs."
+            },
+            "due_date": {
+                "type": "string",
+                "format": "date-time",
+                "description": "The due date of the task."
+            },
+            "created_at": {
+                "type": "string",
+                "format": "date-time",
+                "description": "The timestamp when the task was created."
+            },
+            "assigned_to_first_name": {
+                "type": "string",
+                "description": "The first name of the user to whom the task is assigned."
+            },
+            "assigned_to_last_name": {
+                "type": "string",
+                "description": "The last name of the user to whom the task is assigned."
+            },
+            "assigned_to_username": {
+                "type": "string",
+                "description": "The username of the user to whom the task is assigned."
+            },
+            "project_title": {
+                "type": "string",
+                "description": "The title of the project to which the task belongs."
+            },
+            "project_description": {
+                "type": "string",
+                "description": "The description of the project to which the task belongs."
+            },
+            "team_name": {
+                "type": "string",
+                "description": "The name of the team associated with the project."
+            },
+            "admin_first_name": {
+                "type": "string",
+                "description": "The first name of the administrator of the project."
+            },
+            "admin_last_name": {
+                "type": "string",
+                "description": "The last name of the administrator of the project."
+            },
+            "admin_username": {
+                "type": "string",
+                "description": "The username of the administrator of the project."
+            }
+        }
+    },
+    "user": {
+        "type": "object",
+        "properties": {
+            "id": {
+                "type": "string",
+                "description": "The unique identifier of the user."
+            },
+            "username": {
+                "type": "string",
+                "description": "The username of the user."
+            },
+            "first_name": {
+                "type": "string",
+                "description": "The first name of the user."
+            },
+            "last_name": {
+                "type": "string",
+                "description": "The last name of the user."
+            },
+            "email": {
+                "type": "string",
+                "description": "The email address of the user."
+            },
+            "role": {
+                "type": "string",
+                "description": "The role of the user."
+            },
+            "created_at": {
+                "type": "string",
+                "format": "date-time",
+                "description": "The timestamp when the user was created."
+            },
+            "refreshToken": {
+                "type": "string",
+                "description": "The refresh token of the user."
+            }
+        }
+    },
+    "team": {
+        "type": "object",
+        "properties": {
+            "team_id": {
+                "type": "string",
+                "description": "The unique identifier of the team."
+            },
+            "team_name": {
+                "type": "string",
+                "description": "The name of the team."
+            },
+            "tl_id": {
+                "type": "string",
+                "description": "The unique identifier of the team leader."
+            },
+            "admin_id": {
+                "type": "string",
+                "description": "The unique identifier of the team administrator."
+            },
+            "tl_first_name": {
+                "type": "string",
+                "description": "The first name of the team leader."
+            },
+            "tl_last_name": {
+                "type": "string",
+                "description": "The last name of the team leader."
+            },
+            "tl_username": {
+                "type": "string",
+                "description": "The username of the team leader."
+            },
+            "admin_first_name": {
+                "type": "string",
+                "description": "The first name of the team administrator."
+            },
+            "admin_last_name": {
+                "type": "string",
+                "description": "The last name of the team administrator."
+            },
+            "admin_username": {
+                "type": "string",
+                "description": "The username of the team administrator."
+            }
+        }
+    },
+    "userTeam": {
+        "type": "object",
+        "properties": {
+            "id": {
+                "type": "string",
+                "description": "The unique identifier of the user."
+            },
+            "user_id": {
+                "type": "string",
+                "description": "The unique identifier of the user."
+            },
+            "team_id": {
+                "type": "string",
+                "description": "The unique identifier of the team."
+            },
+            "first_name": {
+                "type": "string",
+                "description": "The first name of the user."
+            },
+            "last_name": {
+                "type": "string",
+                "description": "The last name of the user."
+            },
+            "username": {
+                "type": "string",
+                "description": "The username of the user."
+            },
+            "team_name": {
+                "type": "string",
+                "description": "The name of the team."
+            },
+            "tl_id": {
+                "type": "string",
+                "description": "The unique identifier of the team leader."
+            },
+            "admin_id": {
+                "type": "string",
+                "description": "The unique identifier of the team administrator."
+            },
+            "tl_first_name": {
+                "type": "string",
+                "description": "The first name of the team leader."
+            },
+            "tl_last_name": {
+                "type": "string",
+                "description": "The last name of the team leader."
+            },
+            "tl_username": {
+                "type": "string",
+                "description": "The username of the team leader."
+            },
+            "admin_first_name": {
+                "type": "string",
+                "description": "The first name of the team administrator."
+            },
+            "admin_last_name": {
+                "type": "string",
+                "description": "The last name of the team administrator."
+            },
+            "admin_username": {
+                "type": "string",
+                "description": "The username of the team administrator."
+            }
+        }
+    },
+    "project": {
+        "type": "object",
+        "properties": {
+            "id": {
+                "type": "string",
+                "description": "The unique identifier of the project."
+            },
+            "title": {
+                "type": "string",
+                "description": "The title of the project."
+            },
+            "description": {
+                "type": "string",
+                "description": "The description of the project."
+            },
+            "team_id": {
+                "type": "string",
+                "description": "The unique identifier of the team associated with the project."
+            },
+            "admin_id": {
+                "type": "string",
+                "description": "The unique identifier of the administrator of the project."
+            },
+            "team_name": {
+                "type": "string",
+                "description": "The name of the team associated with the project."
+            },
+            "admin_first_name": {
+                "type": "string",
+                "description": "The first name of the administrator of the project."
+            },
+            "admin_last_name": {
+                "type": "string",
+                "description": "The last name of the administrator of the project."
+            },
+            "admin_username": {
+                "type": "string",
+                "description": "The username of the administrator of the project."
+            },
+            "created_at": {
+                "type": "string",
+                "format": "date-time",
+                "description": "The timestamp when the project was created."
+            }
+        }
+    }
+}

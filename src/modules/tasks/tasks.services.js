@@ -208,7 +208,6 @@ class TasksServices {
     async getUserTasks(user_id) {
         const client = await pool.connect();
         try {
-            console.log(user_id);
             const userTasks = await tasksDal.getUserTasks(client, user_id);
 
             return userTasks;

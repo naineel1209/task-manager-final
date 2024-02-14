@@ -127,8 +127,7 @@ class ProjectsDal {
             on p.team_id = t.id 
             inner join 
             users u1 
-            on p.admin_id = u1.id 
-            WHERE p.id = $1`;
+            on p.admin_id = u1.id`;
             const result = await client.query(getAllProjectsSql);
 
             return result.rows;

@@ -7,13 +7,14 @@
     "start": "node --no-warnings --experimental-modules --es-module-specifier-resolution=node app.js",
     "dev": "nodemon --no-warnings --experimental-modules --es-module-specifier-resolution=node app.js",
     "docs": "swagger-jsdoc -d docs/swaggerDef.cjs src/modules/**/*.routes.js -o docs/swagger.json",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "mocha --require-esm --exit --recursive"
   },
   "type": "module",
   "author": "naineel1209",
   "license": "ISC",
   "dependencies": {
     "bcrypt": "^5.1.1",
+    "chai": "^5.1.0",
     "cookie-parser": "^1.4.6",
     "cors": "^2.8.5",
     "date-fns": "^3.3.1",
@@ -25,6 +26,7 @@
     "http-status-codes": "^2.3.0",
     "joi": "^17.12.1",
     "jsonwebtoken": "^9.0.2",
+    "mocha": "^10.3.0",
     "morgan": "^1.10.0",
     "pg": "^8.11.3",
     "swagger-jsdoc": "^6.2.8",

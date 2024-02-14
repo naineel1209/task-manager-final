@@ -1,0 +1,161 @@
+{
+    "getTeams": {
+        "type": "array",
+        "items": {
+            "$ref": "./definitions.json#/team"
+        }
+    },
+    "createTeam": {
+        "type": "object",
+        "properties": {
+            "name": {
+                "type": "string",
+                "required": true
+            },
+            "tl_id": {
+                "type": "string",
+                "required": true
+            }
+        }
+    },
+    "createTeamResponse": {
+        "type": "object",
+        "properties": {
+            "id": {
+                "type": "string",
+                "required": true
+            },
+            "name": {
+                "type": "string",
+                "required": true
+            },
+            "admin_id": {
+                "type": "string",
+                "required": true
+            },
+            "tl_id": {
+                "type": "string",
+                "required": true
+            }
+        }
+    },
+    "deleteTeam": {
+        "type": "object",
+        "properties": {
+            "team_id": {
+                "type": "string",
+                "required": true
+            }
+        }
+    },
+    "updateTeam": {
+        "type": "object",
+        "properties": {
+            "team_id": {
+                "type": "string",
+                "required": true
+            },
+            "name": {
+                "type": "string"
+            },
+            "tl_id": {
+                "type": "string"
+            }
+        }
+    },
+    "addAmember": {
+        "type": "object",
+        "properties": {
+            "team_id": {
+                "type": "string",
+                "required": true
+            },
+            "user_id": {
+                "oneOf": [
+                    {
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        },
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "required": true
+                    }
+                ]
+            }
+        }
+    },
+    "addAmemberResponse": {
+        "type": "array",
+        "items": {
+            "type": "object",
+            "properties": {
+                "team_id": {
+                    "type": "string",
+                    "required": true
+                },
+                "user_id": {
+                    "type": "string",
+                    "required": true
+                },
+                "id": {
+                    "type": "string",
+                    "required": true
+                }
+            }
+        }
+    },
+    "getTeamMembersResponse": {
+        "type": "array",
+        "items": {
+            "$ref": "./definitions.json#/user"
+        }
+    },
+    "getAsingleTeamResponse": {
+        "type": "object",
+        "properties": {
+            "team": {
+                "type": "array",
+                "items": {
+                    "$ref": "./definitions.json#/team"
+                }
+            },
+            "id": {
+                "type": "string",
+                "description": "The unique identifier of the team."
+            },
+            "name": {
+                "type": "string",
+                "description": "The name of the team."
+            },
+            "tl_id": {
+                "type": "string",
+                "description": "The unique identifier of the team leader."
+            },
+            "admin_id": {
+                "type": "string",
+                "description": "The unique identifier of the team administrator."
+            },
+            "tl_username": {
+                "type": "string",
+                "description": "The username of the team leader."
+            },
+            "tl_first_name": {
+                "type": "string",
+                "description": "The first name of the team leader."
+            },
+            "tl_last_name": {
+                "type": "string",
+                "description": "The last name of the team leader."
+            }
+        }
+    },
+    "getTeamProjects": {
+        "type": "array",
+        "items": {
+            "$ref": "./definitions.json#/project"
+        }
+    }
+}

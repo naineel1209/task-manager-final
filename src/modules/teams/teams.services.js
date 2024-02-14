@@ -162,12 +162,12 @@ class TeamsServices {
                     }
                 }
             } else {
-                const userExists = await mainDal.checkUserExistsById(client, item);
+                const userExists = await mainDal.checkUserExistsById(client, user_id);
                 if (!userExists) {
                     throw new CustomError(statusCodes.BAD_REQUEST, "User does not exist", "User does not exist in the database.");
                 }
 
-                const userIsInAnyTeam = await teamsDal.checkIfUserIsInAnyTeam(client, item);
+                const userIsInAnyTeam = await teamsDal.checkIfUserIsInAnyTeam(client, user_id);
                 if (userIsInAnyTeam) {
                     throw new CustomError(statusCodes.BAD_REQUEST, "User is in a team", "User is already in a team.");
                 }

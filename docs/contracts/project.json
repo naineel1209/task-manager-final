@@ -1,0 +1,36 @@
+{
+    "createProject": {
+        "type": "object",
+        "properties": {
+            "title": {
+                "type": "string",
+                "required": true
+            },
+            "description": {
+                "type": "string",
+                "required": true
+            },
+            "team_id": {
+                "type": "string",
+                "required": true
+            }
+        }
+    },
+    "updateProject": {
+        "type": "object",
+        "properties": {
+            "title": {
+                "type": "string",
+                "required": true
+            },
+            "description": {
+                "type": "string",
+                "required": true
+            },
+            "team_id": {
+                "type": "string",
+                "required": true
+            }
+        }
+    }
+}

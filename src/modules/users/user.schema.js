@@ -42,6 +42,9 @@ const updateUserSchema = {
         email: Joi.string().email(),
         first_name: Joi.string(),
         last_name: Joi.string()
+    }),
+    params: Joi.object({
+        id: Joi.string().required()
     })
 }
 
@@ -49,7 +52,7 @@ const changePasswordSchema = {
     body: Joi.object({
         oldPassword: Joi.string().required(),
         newPassword: Joi.string().min(8).required(),
-        confirmedNewPassword: Joi.valid(Joi.ref('newPassword')).required() // Validate against the value of 'field1'
+        confirmedNewPassword: Joi.valid(Joi.ref('newPassword')).required() // Validate against the value of 'newPassword'
             .messages({
                 'any.only': 'confirmedNewPassword must have the same value as newPassword',
             }),

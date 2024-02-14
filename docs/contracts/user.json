@@ -31,5 +31,125 @@
                 "type": "string"
             }
         }
+    },
+    "loginUser": {
+        "type": "object",
+        "properties": {
+            "username": {
+                "type": "string",
+                "required": true
+            },
+            "password": {
+                "type": "string",
+                "required": true
+            }
+        }
+    },
+    "loginUserResponse": {
+        "type": "object",
+        "properties": {
+            "user_id": {
+                "type": "string"
+            }
+        }
+    },
+    "logoutUser": {
+        "type": "object",
+        "properties": {
+            "accessToken": {
+                "type": "string",
+                "required": true
+            }
+        }
+    },
+    "logoutUserResponse": {
+        "type": "object",
+        "properties": {
+            "message": {
+                "type": "string"
+            }
+        }
+    },
+    "changeUserRole": {
+        "type": "object",
+        "properties": {
+            "id": {
+                "type": "string",
+                "required": true
+            },
+            "role": {
+                "type": "string",
+                "required": true,
+                "enum": [
+                    "ADMIN",
+                    "TL",
+                    "DEV"
+                ]
+            }
+        }
+    },
+    "changeUserRoleResponse": {
+        "type": "object",
+        "properties": {
+            "message": {
+                "type": "string"
+            }
+        }
+    },
+    "getUserTasksResponse": {
+        "type": "object",
+        "properties": {
+            "tasks": {
+                "type": "array",
+                "items": {
+                    "$ref": "./definitions.json#/userTasks"
+                }
+            }
+        }
+    },
+    "changePassword": {
+        "type": "object",
+        "properties": {
+            "oldPassword": {
+                "type": "string",
+                "required": true
+            },
+            "newPassword": {
+                "type": "string",
+                "required": true
+            },
+            "confirmPassword": {
+                "type": "string",
+                "required": true
+            }
+        }
+    },
+    "changePasswordResponse": {
+        "type": "object",
+        "properties": {
+            "message": {
+                "type": "string"
+            }
+        }
+    },
+    "updateUser": {
+        "type": "object",
+        "properties": {
+            "username": {
+                "type": "string"
+            },
+            "password": {
+                "type": "string"
+            },
+            "email": {
+                "type": "string"
+            },
+            "firstName": {
+                "type": "string"
+            },
+            "lastName": {
+                "type": "string"
+            }
+        }
     }
 }

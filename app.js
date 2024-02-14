@@ -39,9 +39,9 @@ app.use(cors({
 }));
 
 //! Swagger docs route
-// const spec = swaggerJSDoc(options);
+const spec = swaggerJSDoc(options);
 app.use("/docs", express.static("./docs"));
-app.use("/docs", swaggerUi.serve, swaggerUi.setup(swaaggerJson));
+app.use("/docs", swaggerUi.serve, swaggerUi.setup(spec));
 
 
 //! Logger Middleware
