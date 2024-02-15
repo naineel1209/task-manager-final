@@ -6,11 +6,15 @@ import { isEqual } from "lodash";
 
 let accessToken;
 
-describe("team test", () => {
-    describe("authentication test", () => {
-        describe("login test", () => {
+describe("team test", () =>
+{
+    describe("authentication test", () =>
+    {
+        describe("login test", () =>
+        {
             //valid login user
-            it("should return 200", async () => {
+            it("should return 200", async () =>
+            {
                 const response = await supertest(app).post("/user/login").send({
                     username: "naineel2",
                     password: "1234567890",
@@ -23,9 +27,11 @@ describe("team test", () => {
             });
         });
 
-        describe("get all teams", () => {
+        describe("get all teams", () =>
+        {
             //unauthorized
-            it("should  return 401", async () => {
+            it("should  return 401", async () =>
+            {
                 const res = await supertest(app).get("/teams");
 
                 expect(res.status).toBe(401);
@@ -33,7 +39,8 @@ describe("team test", () => {
             })
 
             //valid
-            it("should return 200", async () => {
+            it("should return 200", async () =>
+            {
                 const response = await supertest(app).get("/teams/").set("Cookie", accessToken);
 
                 expect(response.status).toBe(200);
@@ -43,9 +50,11 @@ describe("team test", () => {
         })
 
 
-        describe("create a team", () => {
+        describe("create a team", () =>
+        {
             // invalid request - forbidden request 
-            it("should return 400", async () => {
+            it("should return 400", async () =>
+            {
                 const res = await supertest(app)
                     .post("/teams/create")
                     .send({
@@ -105,7 +114,8 @@ describe("team test", () => {
         // })
 
 
-        describe("update team", () => {
+        describe("update team", () =>
+        {
             //invalid request
             // it("should return 401", async () => {
             //     const res = await supertest(app).patch("/teams/update").send({
@@ -118,7 +128,8 @@ describe("team test", () => {
             // })
 
             //valid request
-            it("should return 200", async () => {
+            it("should return 200", async () =>
+            {
                 const res = await supertest(app).patch("/teams/update").send({
                     "team_id": "84caad15-b130-4292-94c5-28a956cbd2ef",
                     "name": "testing team - 999999999999999999"
@@ -129,6 +140,106 @@ describe("team test", () => {
                 expect(res.body).toHaveProperty("name")
                 expect(res.body).toHaveProperty("admin_id")
                 expect(res.body).toHaveProperty("tl_id")
+            })
+        })
+
+        //TODO: refactor
+        describe("add member test", () =>
+        {
+            //invalid request - structure is wrong
+            it("should return 400", async () =>
+            {
+                const res = await supertest(app).post("/teams/add-member").set("Cookie", accessToken);
+
+                expect(res.status).toBe(400);
+                expect(res.body).toHaveProperty("message");
+            })
+
+
+            //invalid request - forbidden request for user as adder
+            it("should return 403", async () =>
+            {
+                const res = await supertest(app).post("/teams/add-member").send({
+                    "team_id": "84caad15-b130-4292-94c5-28a956cbd2ef",
+                    "user_id": "15bca82c-1df0-43e0-b198-61903c07e8f0",
+                }).set("Cookie", accessToken);
+
+                expect(res.status).toBe(403);
+                expect(res.body).toHaveProperty("message");
+            })
+
+            //invalid request - unauthorized request - not actual tl changing the team
+            it("should return 401", () =>
+            {
+                const res = supertest(app).post("/teams/add-member").send({
+                    "team_id": "84caad15-b130-4292-94c5-28a956cbd2ef",
+                    "user_id": "15bca82c-1df0-43e0-b198-61903c07e8f0",
+                });
+
+                expect(res.status).toBe(401);
+                expect(res.body).toHaveProperty("message");
+            });
+
+            //valid request
+            it("should return 201", () =>
+            {
+                const res = supertest(app).post("/teams/add-member").send({
+                    "team_id": "84caad15-b130-4292-94c5-28a956cbd2ef",
+                    "user_id": "48f97134-93d1-48bc-9973-b8394a96a379",
+                }).set("Cookie", accessToken);
+
+                expect(res.status).toBe(201);
+                expect(res.body.length > 0).toBe(true);
+            })
+        });
+
+        //TODO: refactor
+        describe("remove  member test", () =>
+        {
+            //invalid request - structure is wrong
+            it("should return 400", async () =>
+            {
+                const res = await supertest(app).post("/teams/remove-member").set("Cookie", accessToken);
+
+                expect(res.status).toBe(400);
+                expect(res.body).toHaveProperty("message");
+            })
+
+
+            //invalid request - forbidden request for user as adder
+            it("should return 403", async () =>
+            {
+                const res = await supertest(app).post("/teams/remove-member").send({
+                    "team_id": "84caad15-b130-4292-94c5-28a956cbd2ef",
+                    "user_id": "15bca82c-1df0-43e0-b198-61903c07e8f0",
+                }).set("Cookie", accessToken);
+
+                expect(res.status).toBe(403);
+                expect(res.body).toHaveProperty("message");
+            })
+
+            //invalid request - unauthorized request - not actual tl changing the team
+            it("should return 401", () =>
+            {
+                const res = supertest(app).post("/teams/remove-member").send({
+                    "team_id": "84caad15-b130-4292-94c5-28a956cbd2ef",
+                    "user_id": "15bca82c-1df0-43e0-b198-61903c07e8f0",
+                });
+
+                expect(res.status).toBe(401);
+                expect(res.body).toHaveProperty("message");
+            });
+
+            //valid request
+            it("should return 200  ", () =>
+            {
+                const res = supertest(app).post("/teams/remove-member").send({
+                    "team_id": "84caad15-b130-4292-94c5-28a956cbd2ef",
+                    "user_id": "48f97134-93d1-48bc-9973-b8394a96a379",
+                }).set("Cookie", accessToken);
+
+                expect(res.status).toBe(200);
+                expect(res.body.length > 0).toBe(true);
             })
         })
     })
