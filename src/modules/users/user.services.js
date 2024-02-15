@@ -235,7 +235,11 @@ class UserServices {
 
             const result = await userDal.updateUser(client, id, body);
 
-            return result;
+            if (!result) {
+                throw new CustomError(statusCodes.INTERNAL_SERVER_ERROR, "Internal Server Error", "Something went wrong!")
+            }
+
+            return { message: "User updated successfully" };
         } catch (err) {
             if (err instanceof CustomError) {
                 throw err;

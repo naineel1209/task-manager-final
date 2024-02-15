@@ -9,7 +9,6 @@ import statusCodes from "http-status-codes";
 import swaggerUi from "swagger-ui-express";
 import swaggerJSDoc from "swagger-jsdoc";
 import options from "./docs/swaggerDef.cjs";
-import swaaggerJson from "./docs/swagger.json" assert { type: "json" };
 config();
 
 //! loggers
@@ -77,9 +76,9 @@ app.use("*", (req, res) => {
 //! Error Handler
 app.use((err, req, res, next) => {
 
-    if (err.status >= 500) {
+    if (err.statusCode >= 500) {
         //log the error to the logger and send the error to the client
-        logger.error(`${err.status || statusCodes.INTERNAL_SERVER_ERROR} - ${err.message} - ${req.originalUrl} - ${req.method} - ${req.ip}`);
+        logger.error(`${err.statusCode || statusCodes.INTERNAL_SERVER_ERROR} - ${err.message} - ${req.originalUrl} - ${req.method} - ${req.ip}`);
     }
 
     if (process.env.NODE_ENV === "development") {
@@ -90,14 +89,20 @@ app.use((err, req, res, next) => {
         return res.status(err.statusCode).json({ message: err.message, errors: err.details });
     }
 
-    res.status(err.status || statusCodes.INTERNAL_SERVER_ERROR).json({
+    res.status(err.statusCode || statusCodes.INTERNAL_SERVER_ERROR).json({
         message: err.message,
         stack: process.env.NODE_ENV === "production" ? "🥞" : err.stack
     });
 })
 
-server.listen(process.env.PORT, () => {
-    console.log("Server is running on port 3000");
-});
+if (process.env.NODE_ENV != "test") {
+    server.listen(process.env.PORT, () => {
+        console.log("Server is running on port 3000");
+    });
+}
+
+app.closeServer = () => {
+    server.close();
+};
 
 export default app;

@@ -7,15 +7,14 @@
     "start": "node --no-warnings --experimental-modules --es-module-specifier-resolution=node app.js",
     "dev": "nodemon --no-warnings --experimental-modules --es-module-specifier-resolution=node app.js",
     "docs": "swagger-jsdoc -d docs/swaggerDef.cjs src/modules/**/*.routes.js -o docs/swagger.json",
-    "test": "mocha ./test/**/*.test.js --exit"
+    "test": "cross-env NODE_ENV=test jest  --detectOpenHandles -t ",
+    "clear_jest": "jest --clearCache"
   },
   "type": "module",
   "author": "naineel1209",
   "license": "ISC",
   "dependencies": {
     "bcrypt": "^5.1.1",
-    "chai": "^5.1.0",
-    "chai-http": "^4.4.0",
     "cookie-parser": "^1.4.6",
     "cors": "^2.8.5",
     "date-fns": "^3.3.1",
@@ -37,7 +36,16 @@
     "zsh": "^0.0.1"
   },
   "devDependencies": {
+    "@babel/core": "^7.23.9",
+    "@babel/plugin-syntax-import-attributes": "^7.23.3",
+    "@babel/preset-env": "^7.23.9",
     "@types/express": "^4.17.21",
-    "sinon": "^17.0.1"
+    "babel-jest": "^29.7.0",
+    "chai-http": "^4.4.0",
+    "cross-env": "^7.0.3",
+    "jest": "^29.7.0",
+    "lodash": "^4.17.21",
+    "sinon": "^17.0.1",
+    "supertest": "^6.3.4"
   }
 }

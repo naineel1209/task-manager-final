@@ -25,14 +25,14 @@ const logoutSchema = {
 
 const changeUserRoleSchema = {
     body: Joi.object({
-        id: Joi.string().required(),
+        id: Joi.string().required().regex(/^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i),
         role: Joi.string().required().valid("ADMIN", "DEV", "TL")
     })
 }
 
 const getSingleUserSchema = {
     params: Joi.object({
-        id: Joi.string().required()
+        id: Joi.string().required().regex(/^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i)
     })
 }
 
@@ -42,9 +42,9 @@ const updateUserSchema = {
         email: Joi.string().email(),
         first_name: Joi.string(),
         last_name: Joi.string()
-    }),
+    }).min(1),
     params: Joi.object({
-        id: Joi.string().required()
+        id: Joi.string().required().regex(/^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i)
     })
 }
 

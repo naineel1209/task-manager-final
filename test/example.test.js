@@ -1,39 +1,23 @@
-import * as chai from "chai";
-import chaiHttp from "chai-http";
+import supertest from "supertest";
 import app from "../app.js";
+import { set } from "date-fns";
 
-chai.use(chaiHttp);
-const { assert, request } = chai;
+describe("example test", () => {
+    describe("nest describe", () => {
+        it("should return true", () => {
+            expect(true).toBe(true);
+        })
 
-const BASE_URL = "http://localhost:3000";
-
-
-describe("Test 1", () => {
-    it("should return 1", () => {
-        assert.equal(1, 1);
+        it("should response with 200", async () => {
+            const response = await supertest(app).get("/");
+            expect(response.status).toBe(200);
+        })
     })
-});
+})
 
-describe("Login Test", () => {
-    it("should return 200", async function (done) {
-        // return new Promise((res, rej) => {
-        //     request(BASE_URL)
-        //         .get("/")
-        //         .end((err, res) => {
-        //             if (err) {
-        //                 rej(err);
-        //             }
-        //             chai.expect(res.statusCode).to.be.equal(200);
-        //         }).then(() => {
-        //             res(done());
-        //         })
-        // })
+afterAll(async () => {
+    await new Promise(resolve => setTimeout(() => resolve(), 500)); // avoid jest open handle error
 
-        return request.agent(app)
-            .get("/")
-            .then(res => {
-                chai.expect(res.status).to.be.equal(200);
-                done();
-            })
-    });
+    // close server
+    app.closeServer();
 })

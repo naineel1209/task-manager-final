@@ -143,7 +143,7 @@ class UserDal {
      */
     async updateUser(client, id, body) {
         try {
-            let updateUserSql = "UPDATE users SET ";
+            let updateUserSql = "UPDATE users SET  ";
             let updateUserValues = [];
             let count = 1;
 
