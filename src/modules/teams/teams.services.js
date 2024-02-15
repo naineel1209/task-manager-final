@@ -210,9 +210,15 @@ class TeamsServices {
             //check if all users/user exist in the database
             let usersExist;
             if (Array.isArray(user_id)) {
-                usersExist = await teamsDal.checkIfUsersExistInTeam(client, team_id, user_id);
+                for (let item of user_id) {
+                    usersExist = await teamsDal.checkIfUsersExistInTeam(client, team_id, item);
+
+                    if (!usersExist) {
+                        throw new CustomError(statusCodes.BAD_REQUEST, "User doesn't exist", "User does not exist in the database");
+                    }
+                }
             } else {
-                usersExist = await teamsDal.checkIfUsersExistInTeam(client, team_id, [user_id]);
+                usersExist = await teamsDal.checkIfUsersExistInTeam(client, team_id, user_id);
             }
 
             if (!usersExist) {
@@ -262,10 +268,6 @@ class TeamsServices {
         const client = await pool.connect();
         try {
             const teamExists = await teamsDal.checkIfUserIsInAnyTeam(client, user_id);
-
-            if (!teamExists) {
-                throw new CustomError(statusCodes.BAD_REQUEST, "User does not belong to any team", "User does not belong to any team.");
-            }
 
             return teamExists;
         } catch (err) {

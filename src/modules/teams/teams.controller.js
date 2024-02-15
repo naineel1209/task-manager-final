@@ -58,7 +58,7 @@ const addMembersToTeam = async (req, res) => {
 
 const removeMemberFromTeam = async (req, res) => {
     const { team_id, user_id } = req.body;
-
+    console.log(user_id);
     const removedMember = await teamsServices.removeMembersFromTeam(team_id, user_id, req.user.id, req.user.role);
 
     return res.status(statusCodes.OK).send(removedMember);

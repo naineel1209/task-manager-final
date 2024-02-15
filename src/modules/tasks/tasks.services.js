@@ -23,7 +23,7 @@ class TasksServices {
                 throw new CustomError(403, "Forbidden", "You are not allowed to create task in this project");
             }
 
-            const userInTeam = await teamsDal.checkIfUsersExistInTeam(client, projectTeamDetails.team_id, [data.assignedTo]);
+            const userInTeam = await teamsDal.checkIfUsersExistInTeam(client, projectTeamDetails.team_id, data.assignedTo);
 
             if (!userInTeam) {
                 throw new CustomError(400, "Bad Request", "User not in the team");
@@ -100,7 +100,7 @@ class TasksServices {
             }
 
             if (data.assignedTo) {
-                const userInTeam = await teamsDal.checkIfUsersExistInTeam(client, projectTeamDetails.team_id, [data.assignedTo]);
+                const userInTeam = await teamsDal.checkIfUsersExistInTeam(client, projectTeamDetails.team_id, data.assignedTo);
 
                 if (!userInTeam) {
                     throw new CustomError(400, "Bad Request", "User not in the team");

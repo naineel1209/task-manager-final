@@ -201,9 +201,16 @@ class TeamsDal {
     */
     async removeMemberFromTeam(client, team_id, user_id, multiple = false) {
         try {
-            let addMemberToTeamSql = "DELETE FROM teamsusersmapping WHERE team_id = $1 AND user_id = ANY($2) RETURNING *;";
-            let addMemberToTeamValues = [team_id, user_id];
-            const result = await client.query(addMemberToTeamSql, addMemberToTeamValues);
+            let removeMembersFromTeamSql = "DELETE FROM teamsusersmapping WHERE team_id = $1 AND user_id = ";
+
+            if (multiple) {
+                removeMembersFromTeamSql += "ANY($2) RETURNING *";
+            } else {
+                removeMembersFromTeamSql += "$2 RETURNING *";
+            }
+
+            let removeMemberFromTeamValues = [team_id, user_id];
+            const result = await client.query(removeMembersFromTeamSql, removeMemberFromTeamValues);
 
             return result.rows;
         } catch (err) {
@@ -310,10 +317,10 @@ class TeamsDal {
      * @param {string} user_id 
      * @returns QueryResult<any> | CustomError
      */
-    async checkIfUsersExistInTeam(client, team_id, user_id) {
+    async checkIfUsersExistInTeam(client, team_id, user_id, multiple) {
         try {
-            const checkIfUsersExistInTeamSql = "SELECT * FROM teamsusersmapping WHERE team_id = $1 AND user_id = ANY($2)";
-            const checkIfUsersExistInTeamValues = [team_id, user_id];
+            let checkIfUsersExistInTeamSql = "SELECT * FROM teamsusersmapping WHERE team_id = $1 AND user_id = $2";
+            let checkIfUsersExistInTeamValues = [team_id, user_id];
 
             const usersExist = await client.query(checkIfUsersExistInTeamSql, checkIfUsersExistInTeamValues);
 
