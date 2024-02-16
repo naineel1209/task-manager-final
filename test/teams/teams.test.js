@@ -144,17 +144,17 @@ describe("team test", () =>
         })
 
         //TODO: refactor
-<<<<<<< HEAD
-        describe("add member test", () => {
-            //invalid request - structure is wrong
-            it("should return 400", async () => {
-=======
+<<<<<<< refs/remotes/origin/master
         describe("add member test", () =>
         {
             //invalid request - structure is wrong
             it("should return 400", async () =>
             {
->>>>>>> 416c0b81aac7d6f4e5e332f8e6c3460330fe9177
+=======
+        describe("add member test", () => {
+            //invalid request - structure is wrong
+            it("should return 400", async () => {
+>>>>>>> fixed the logic of removing and adding team members, completed teams.test.js
                 const res = await supertest(app).post("/teams/add-member").set("Cookie", accessToken);
 
                 expect(res.status).toBe(400);
@@ -162,48 +162,7 @@ describe("team test", () =>
             })
 
 
-<<<<<<< HEAD
-            // //invalid request - forbidden request for user as adder
-            // it("should return 403", async () =>
-            // {
-            //     const res = await supertest(app).post("/teams/add-member").send({
-            //         "team_id": "84caad15-b130-4292-94c5-28a956cbd2ef",
-            //         "user_id": "15bca82c-1df0-43e0-b198-61903c07e8f0",
-            //     }).set("Cookie", accessToken);
-
-            //     expect(res.status).toBe(403);
-            //     expect(res.body).toHaveProperty("message");
-            // })
-
-            //invalid request - unauthorized request - not actual tl changing the team
-            // it("should return 401", () => {
-            //     const res = supertest(app).post("/teams/add-member").send({
-            //         "team_id": "84caad15-b130-4292-94c5-28a956cbd2ef",
-            //         "user_id": "0888689c-0e4e-45c6-871c-52f439713cc3",
-            //     });
-
-            //     expect(res.status).toBe(401);
-            //     expect(res.body).toHaveProperty("message");
-            // });
-
-            //valid request
-            // it("should return 201", async () => {
-            //     const res = await supertest(app).post("/teams/add-member").send({
-            //         "team_id": "84caad15-b130-4292-94c5-28a956cbd2ef",
-            //         "user_id": "0888689c-0e4e-45c6-871c-52f439713cc3",
-            //     }).set("Cookie", accessToken);
-            //     console.log(res.body);
-            //     expect(res.status).toBe(201);
-            //     expect(res.body.length > 0).toBe(true);
-            // })
-        });
-
-        // //TODO: refactor
-        describe("remove  member test", () => {
-            //invalid request - structure is wrong
-            it("should return 400", async () => {
-                const res = await supertest(app).delete("/teams/remove-member").set("Cookie", accessToken);
-=======
+<<<<<<< refs/remotes/origin/master
             //invalid request - forbidden request for user as adder
             it("should return 403", async () =>
             {
@@ -248,7 +207,48 @@ describe("team test", () =>
             it("should return 400", async () =>
             {
                 const res = await supertest(app).post("/teams/remove-member").set("Cookie", accessToken);
->>>>>>> 416c0b81aac7d6f4e5e332f8e6c3460330fe9177
+=======
+            // //invalid request - forbidden request for user as adder
+            // it("should return 403", async () =>
+            // {
+            //     const res = await supertest(app).post("/teams/add-member").send({
+            //         "team_id": "84caad15-b130-4292-94c5-28a956cbd2ef",
+            //         "user_id": "15bca82c-1df0-43e0-b198-61903c07e8f0",
+            //     }).set("Cookie", accessToken);
+
+            //     expect(res.status).toBe(403);
+            //     expect(res.body).toHaveProperty("message");
+            // })
+
+            //invalid request - unauthorized request - not actual tl changing the team
+            // it("should return 401", () => {
+            //     const res = supertest(app).post("/teams/add-member").send({
+            //         "team_id": "84caad15-b130-4292-94c5-28a956cbd2ef",
+            //         "user_id": "0888689c-0e4e-45c6-871c-52f439713cc3",
+            //     });
+
+            //     expect(res.status).toBe(401);
+            //     expect(res.body).toHaveProperty("message");
+            // });
+
+            //valid request
+            // it("should return 201", async () => {
+            //     const res = await supertest(app).post("/teams/add-member").send({
+            //         "team_id": "84caad15-b130-4292-94c5-28a956cbd2ef",
+            //         "user_id": "0888689c-0e4e-45c6-871c-52f439713cc3",
+            //     }).set("Cookie", accessToken);
+            //     console.log(res.body);
+            //     expect(res.status).toBe(201);
+            //     expect(res.body.length > 0).toBe(true);
+            // })
+        });
+
+        // //TODO: refactor
+        describe("remove  member test", () => {
+            //invalid request - structure is wrong
+            it("should return 400", async () => {
+                const res = await supertest(app).delete("/teams/remove-member").set("Cookie", accessToken);
+>>>>>>> fixed the logic of removing and adding team members, completed teams.test.js
 
                 expect(res.status).toBe(400);
                 expect(res.body).toHaveProperty("message");
@@ -256,7 +256,42 @@ describe("team test", () =>
 
 
             //invalid request - forbidden request for user as adder
-<<<<<<< HEAD
+<<<<<<< refs/remotes/origin/master
+            it("should return 403", async () =>
+            {
+                const res = await supertest(app).post("/teams/remove-member").send({
+                    "team_id": "84caad15-b130-4292-94c5-28a956cbd2ef",
+                    "user_id": "15bca82c-1df0-43e0-b198-61903c07e8f0",
+                }).set("Cookie", accessToken);
+
+                expect(res.status).toBe(403);
+                expect(res.body).toHaveProperty("message");
+            })
+
+            //invalid request - unauthorized request - not actual tl changing the team
+            it("should return 401", () =>
+            {
+                const res = supertest(app).post("/teams/remove-member").send({
+                    "team_id": "84caad15-b130-4292-94c5-28a956cbd2ef",
+                    "user_id": "15bca82c-1df0-43e0-b198-61903c07e8f0",
+                });
+
+                expect(res.status).toBe(401);
+                expect(res.body).toHaveProperty("message");
+            });
+
+            //valid request
+            it("should return 200  ", () =>
+            {
+                const res = supertest(app).post("/teams/remove-member").send({
+                    "team_id": "84caad15-b130-4292-94c5-28a956cbd2ef",
+                    "user_id": "48f97134-93d1-48bc-9973-b8394a96a379",
+                }).set("Cookie", accessToken);
+
+                expect(res.status).toBe(200);
+                expect(res.body.length > 0).toBe(true);
+            })
+=======
             // it("should return 403", async () => {
             //     const res = await supertest(app).post("/teams/remove-member").send({
             //         "team_id": "84caad15-b130-4292-94c5-28a956cbd2ef",
@@ -377,42 +412,7 @@ describe("team test", () =>
                 expect(res.status).toBe(200);
                 expect(res.body.length > 0).toBe(true);
             });
-=======
-            it("should return 403", async () =>
-            {
-                const res = await supertest(app).post("/teams/remove-member").send({
-                    "team_id": "84caad15-b130-4292-94c5-28a956cbd2ef",
-                    "user_id": "15bca82c-1df0-43e0-b198-61903c07e8f0",
-                }).set("Cookie", accessToken);
-
-                expect(res.status).toBe(403);
-                expect(res.body).toHaveProperty("message");
-            })
-
-            //invalid request - unauthorized request - not actual tl changing the team
-            it("should return 401", () =>
-            {
-                const res = supertest(app).post("/teams/remove-member").send({
-                    "team_id": "84caad15-b130-4292-94c5-28a956cbd2ef",
-                    "user_id": "15bca82c-1df0-43e0-b198-61903c07e8f0",
-                });
-
-                expect(res.status).toBe(401);
-                expect(res.body).toHaveProperty("message");
-            });
-
-            //valid request
-            it("should return 200  ", () =>
-            {
-                const res = supertest(app).post("/teams/remove-member").send({
-                    "team_id": "84caad15-b130-4292-94c5-28a956cbd2ef",
-                    "user_id": "48f97134-93d1-48bc-9973-b8394a96a379",
-                }).set("Cookie", accessToken);
-
-                expect(res.status).toBe(200);
-                expect(res.body.length > 0).toBe(true);
-            })
->>>>>>> 416c0b81aac7d6f4e5e332f8e6c3460330fe9177
+>>>>>>> fixed the logic of removing and adding team members, completed teams.test.js
         })
     })
 });
