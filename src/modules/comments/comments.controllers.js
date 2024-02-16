@@ -10,7 +10,7 @@ export const getComments = async (req, res) => {
 export const createComment = async (req, res) => {
     const comment = await commentsServices.createComment(req.body, req.user.id, req.params.task_id);
 
-    return res.status(statusCodes.OK).send(comment);
+    return res.status(statusCodes.CREATED).send(comment);
 };
 
 export const patchComment = async (req, res) => {
