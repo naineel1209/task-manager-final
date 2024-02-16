@@ -234,7 +234,8 @@ class TasksDal {
             join teams t2 ON t2.id = p.team_id 
             join users u on u.id = p.admin_id 
             join users u2 on u2.id = t.assigned_to_id
-            WHERE t.assigned_to_id = $1;`;
+            WHERE t.assigned_to_id = $1
+            ORDER BY due_date ASC, created_at DESC;`;
             const getUserTasksValues = [user_id];
 
             const tasks = await client.query(getUserTasksSql, getUserTasksValues);
