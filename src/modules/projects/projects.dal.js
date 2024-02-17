@@ -62,7 +62,7 @@ class ProjectsDal {
 
     async deleteProject(client, project_id) {
         try {
-            const deleteProjectSql = "DELETE FROM projects WHERE id = $1 RETURNING *";
+            const deleteProjectSql = "UPDATE projects SET is_deleted = true WHERE id = $1 RETURNING *";
             const deleteProjectValues = [project_id];
 
             const result = await client.query(deleteProjectSql, deleteProjectValues);
@@ -73,6 +73,42 @@ class ProjectsDal {
                 throw err;
             }
             else {
+                throw new CustomError(statusCodes.INTERNAL_SERVER_ERROR, "Something went wrong", err.message);
+            }
+        }
+    }
+
+    async deleteProjectTasks(client, project_id) {
+        try {
+            const deleteProjectTasksSql = "UPDATE tasks SET is_deleted = true WHERE project_id = $1 RETURNING *;"
+            const deleteProjectTasksValues = [project_id];
+
+            const result = await client.query(deleteProjectTasksSql, deleteProjectTasksValues);
+
+            return result.rows;
+        } catch (err) {
+            if (err instanceof CustomError) {
+                throw err;
+            } else {
+                throw new CustomError(statusCodes.INTERNAL_SERVER_ERROR, "Something went wrong", err.message);
+            }
+        }
+    }
+
+    async deleteTasksComments(client, tasks) {
+        try {
+            const tasks_id = tasks.map(task => task.id);
+
+            const deleteProjectTasksSql = "UPDATE comments SET is_deleted = true WHERE task_id = ANY($1) RETURNING *;"
+            const deleteProjectTasksValues = [tasks_id]; s
+
+            const result = await client.query(deleteProjectTasksSql, deleteProjectTasksValues);
+
+            return result.rows;
+        } catch (err) {
+            if (err instanceof CustomError) {
+                throw err;
+            } else {
                 throw new CustomError(statusCodes.INTERNAL_SERVER_ERROR, "Something went wrong", err.message);
             }
         }

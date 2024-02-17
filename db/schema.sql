@@ -111,7 +111,7 @@ CREATE TABLE public.comments (
     task_id uuid NOT NULL,
     created_at timestamp without time zone DEFAULT CURRENT_TIMESTAMP NOT NULL,
     edited boolean DEFAULT false,
-    is_deleted boolean
+    is_deleted boolean DEFAULT false
 );
 
 
@@ -126,7 +126,7 @@ CREATE TABLE public.projects (
     team_id uuid,
     admin_id uuid,
     created_at timestamp without time zone DEFAULT CURRENT_TIMESTAMP NOT NULL,
-    is_deleted boolean
+    is_deleted boolean DEFAULT false
 );
 
 
@@ -153,7 +153,7 @@ CREATE TABLE public.tasks (
     project_id uuid NOT NULL,
     due_date timestamp without time zone NOT NULL,
     created_at timestamp without time zone DEFAULT CURRENT_TIMESTAMP NOT NULL,
-    is_deleted boolean
+    is_deleted boolean DEFAULT false
 );
 
 
@@ -177,7 +177,7 @@ CREATE TABLE public.teamsusersmapping (
     id uuid DEFAULT public.uuid_generate_v4() NOT NULL,
     user_id uuid,
     team_id uuid,
-    is_deleted boolean
+    is_deleted boolean DEFAULT false
 );
 
 
@@ -195,7 +195,7 @@ CREATE TABLE public.users (
     roles public.roles NOT NULL,
     refresh_token character varying,
     created_at timestamp without time zone DEFAULT CURRENT_TIMESTAMP NOT NULL,
-    is_deleted boolean
+    is_deleted boolean DEFAULT false
 );
 
 
