@@ -9,10 +9,13 @@ const createTask = async (req, res) => {
 
 const getProjectTasks = async (req, res) => {
 
-    if (req.query.search) {
-
+    if (req.query.start_date && req.query.end_date) {
+        if (new Date(req.query.start_date) > new Date(req.query.end_date)) {
+            return res.status(statusCodes.BAD_REQUEST).send({ message: "start_date cannot be greater than end_date" });
+        }
     }
-    const tasks = await tasksServices.getProjectTasks(req.params.id);
+
+    const tasks = await tasksServices.getProjectTasks(req.params.id, req.query.search, req.query.start_date, req.query.end_date);
 
     return res.status(statusCodes.OK).send(tasks);
 }

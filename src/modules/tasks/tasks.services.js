@@ -58,10 +58,10 @@ class TasksServices {
      * @param {*} project_id 
      * @returns 
      */
-    async getProjectTasks(project_id) {
+    async getProjectTasks(project_id, search, start_date, end_date) {
         const client = await pool.connect();
         try {
-            const projectTasks = await tasksDal.getProjectTasks(client, project_id);
+            const projectTasks = await tasksDal.getProjectTasks(client, project_id, search, start_date, end_date);
 
             return projectTasks;
         } catch (err) {

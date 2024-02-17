@@ -66,9 +66,22 @@ class TasksDal {
      * @param {*} project_id 
      * @returns 
      */
-    async getProjectTasks(client, project_id) {
+    async getProjectTasks(client, project_id, search, start_date, end_date) {
+
         try {
-            const getProjectTasksSql = `
+            let searchFilter = "";
+            let dateFilter = "";
+
+            if (search) {
+                searchFilter = ` AND ts.title ILIKE $2`; //add the search condition
+            }
+
+            if (start_date && end_date) {
+                dateFilter = ` AND ts.due_date >= $3 AND ts.due_date <= $4`; //add the start_date and end_date condition
+            }
+
+            const getProjectTasksValues = [project_id];
+            let getProjectTasksSql = `
             select ts.*, 
             u2.first_name as "assigned_to_first_name",
             u2.last_name as "assigned_to_last_name", 
@@ -97,10 +110,13 @@ class TasksDal {
             AND p.is_deleted = false
             AND u1.is_deleted = false
             AND u2.is_deleted = false
+            ${searchFilter}
+            ${dateFilter}
             ORDER BY ts.due_date ASC, ts.created_at DESC;`;
-            const getProjectTasksValues = [project_id];
 
             const projectTasks = await client.query(getProjectTasksSql, getProjectTasksValues);
+
+            console.log(projectTasks.rows);
 
             return projectTasks.rows;
         } catch (err) {

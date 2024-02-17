@@ -88,10 +88,6 @@ router
     .post(verifyToken, checkPermission(["ADMIN", "TL"]), validate(createTaskSchema, { keyByField: true }), createTask);
 
 router
-    .route("/search")
-    .get(verifyToken, validate(getSearchedTasksSchema, { keyByField: true }), getSearchedTasks);
-
-router
     .route("/get-tl-tasks")
     .get(verifyToken, validate(getProjectTasksSchema, { keyByField: true }), getTlTasks);
 
