@@ -5,6 +5,8 @@ import {
     addMembersToTeam,
     createTeam,
     deleteTeam,
+    getDummyAdmin,
+    getDummyTL,
     getSingleTeam,
     getTeamMembers,
     getTeamProjects,
@@ -278,6 +280,14 @@ router
 router
     .route("/get-team-members")
     .get(verifyToken, getTeamMembers);
+
+router
+    .route("/get-dummy-tl")
+    .get(verifyToken, checkPermission(["ADMIN"]), getDummyTL);
+
+router
+    .route("/get-dummy-admin")
+    .get(verifyToken, checkPermission(["ADMIN"]), getDummyAdmin);
 
 //below route is for getting team member of a single team
 

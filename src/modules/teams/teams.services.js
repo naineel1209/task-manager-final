@@ -367,6 +367,47 @@ class TeamsServices {
             client.release();
         }
     }
+
+
+    /**
+     * Service to get the dummy team lead
+     * @returns {Promise<any> | CustomError}
+     */
+    async getDummyTL() {
+        const client = await pool.connect();
+        try {
+            const dummyTL = await teamsDal.getDummyTL(client);
+
+            return dummyTL;
+        } catch (err) {
+            if (err instanceof CustomError)
+                throw err;
+            else
+                throw new CustomError(statusCodes.INTERNAL_SERVER_ERROR, "Something went wrong", err.message);
+        } finally {
+            client.release();
+        }
+    }
+
+    /**
+     * Service to get the dummy admin
+     * @returns {Promise<any> | CustomError}
+     */
+    async getDummyAdmin() {
+        const client = await pool.connect();
+        try {
+            const dummyTL = await teamsDal.getDummyAdmin(client);
+
+            return dummyTL;
+        } catch (err) {
+            if (err instanceof CustomError)
+                throw err;
+            else
+                throw new CustomError(statusCodes.INTERNAL_SERVER_ERROR, "Something went wrong", err.message);
+        } finally {
+            client.release();
+        }
+    }
 }
 
 export default new TeamsServices();

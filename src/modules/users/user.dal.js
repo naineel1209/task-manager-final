@@ -95,7 +95,7 @@ class UserDal {
      */
     async changeRole(client, id, role) {
         try {
-            const changeRoleSql = "UPDATE users SET roles = $1 WHERE id = $2;";
+            const changeRoleSql = "UPDATE users SET roles = $1 WHERE id = $2 AND is_deleted = false;";
             const changeRoleValues = [role, id];
 
             const result = await client.query(changeRoleSql, changeRoleValues);
@@ -120,7 +120,7 @@ class UserDal {
      */
     async getSingleUser(client, id) {
         try {
-            const userSql = "SELECT * FROM users WHERE id = $1";
+            const userSql = "SELECT * FROM users WHERE id = $1 AND is_deleted = false";
             const userValues = [id];
 
             const user = await client.query(userSql, userValues);

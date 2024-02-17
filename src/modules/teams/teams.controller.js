@@ -58,7 +58,7 @@ const addMembersToTeam = async (req, res) => {
 
 const removeMemberFromTeam = async (req, res) => {
     const { team_id, user_id } = req.body;
-    console.log(user_id);
+
     const removedMember = await teamsServices.removeMembersFromTeam(team_id, user_id, req.user.id, req.user.role);
 
     return res.status(statusCodes.OK).send(removedMember);
@@ -76,8 +76,20 @@ const getTeamProjects = async (req, res) => {
     return res.status(statusCodes.OK).send(projects);
 }
 
+const getDummyTL = async (req, res) => {
+    const tl = await teamsServices.getDummyTL();
+
+    return res.status(statusCodes.OK).send(tl);
+}
+
+const getDummyAdmin = async (req, res) => {
+    const admin = await teamsServices.getDummyAdmin();
+
+    return res.status(statusCodes.OK).send(admin);
+}
+
 export {
     addMembersToTeam, createTeam,
-    deleteTeam, getSingleTeam, getTeamMembers, getTeamProjects, getTeams, getUserTeam, removeMemberFromTeam, updateTeam
+    deleteTeam, getDummyAdmin, getDummyTL, getSingleTeam, getTeamMembers, getTeamProjects, getTeams, getUserTeam, removeMemberFromTeam, updateTeam
 };
 

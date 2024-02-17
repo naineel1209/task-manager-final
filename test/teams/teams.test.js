@@ -194,7 +194,6 @@ describe("team test", () => {
             it("should return 200", async () => {
                 const res = await supertest(app).get("/teams/cd6d0367-e332-4820-97dd-697076426430").set("Cookie", accessToken);
 
-
                 expect(res.status).toBe(200);
                 expect(res.body).toHaveProperty("team");
                 expect(res.body).toHaveProperty("id")

@@ -9,7 +9,7 @@ class CommentsDal {
      */
     async getComments(client, task_id) {
         try {
-            const getCommentsSql = `select c.*, u.first_name as first_name, u.last_name as last_name, u.username as username, u.email as user_email from comments c inner join users u on c.user_id = u.id WHERE c.task_id = $1;`;
+            const getCommentsSql = `select c.*, u.first_name as first_name, u.last_name as last_name, u.username as username, u.email as user_email from comments c inner join users u on c.user_id = u.id WHERE c.task_id = $1 and c.is_deleted = false and u.is_deleted = false;`;
             const getCommentsValues = [task_id];
 
             const comments = await client.query(getCommentsSql, getCommentsValues);
@@ -100,7 +100,7 @@ class CommentsDal {
 
     async deleteComment(client, comment_id) {
         try {
-            const deleteCommentSql = "DELETE FROM comments WHERE id = $1";
+            const deleteCommentSql = "UPDATE comments SET is_deleted = true WHERE id = $1 RETURNING *;";
             const deleteCommentValues = [comment_id];
 
             const deletedComment = await client.query(deleteCommentSql, deleteCommentValues);

@@ -124,6 +124,23 @@ class ProjectServices {
             client.release();
         }
     }
+
+    async getDummyAdminProject() {
+        const client = await pool.connect();
+        try {
+            const admin = await projectsDal.getDummyAdminProject(client);
+
+            return admin;
+        } catch (err) {
+            if (err instanceof CustomError) {
+                throw err;
+            } else {
+                throw new CustomError(500, "Something went wrong", err.message);
+            }
+        } finally {
+            client.release();
+        }
+    }
 }
 
 export default new ProjectServices();

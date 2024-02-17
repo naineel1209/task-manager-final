@@ -150,7 +150,9 @@ class ProjectsDal {
             inner join 
             users u1 
             on p.admin_id = u1.id 
-            WHERE p.id = $1`;
+            WHERE p.id = $1
+            and p.is_deleted = false
+            and u1.is_deleted = false;`;
             const getProjectValues = [project_id];
 
             const result = await client.query(getProjectSql, getProjectValues);
@@ -182,7 +184,9 @@ class ProjectsDal {
             on p.team_id = t.id 
             inner join 
             users u1 
-            on p.admin_id = u1.id`;
+            on p.admin_id = u1.id
+            where p.is_deleted = false
+            and u1.is_deleted = false;`;
             const result = await client.query(getAllProjectsSql);
 
             return result.rows;
@@ -192,6 +196,24 @@ class ProjectsDal {
             } else {
                 throw new CustomError(statusCodes.INTERNAL_SERVER_ERROR, "Something went wrong", err.message);
             }
+        }
+    }
+
+
+    /** 
+     * get dummy admin
+     */
+    async getDummyAdminProject(client) {
+        try {
+            const getDummyTLSql = "SELECT * FROM projects WHERE admin_id = '7fff170e-c08b-43b1-a094-e006ea21d347';";
+            const dummyTL = await client.query(getDummyTLSql);
+
+            return dummyTL.rows;
+        } catch (err) {
+            if (err instanceof CustomError)
+                throw err;
+            else
+                throw new CustomError(statusCodes.INTERNAL_SERVER_ERROR, "Something went wrong", err.message);
         }
     }
 }

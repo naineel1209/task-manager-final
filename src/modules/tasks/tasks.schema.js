@@ -7,7 +7,7 @@ const createTaskSchema = {
         categories: Joi.array().items(Joi.string()).required(),
         // status: Joi.string().required().valid("TODO", "INPROGRESS", "DONE", "TESTING", "REOPEN"),
         assignedTo: Joi.string().required(),
-        dueDate: Joi.date().required(),
+        dueDate: Joi.date().greater('now').required(),
     }),
     params: Joi.object({
         id: Joi.string().required(),
@@ -49,7 +49,16 @@ const getSingleProjectTaskSchema = {
     })
 }
 
+const getSearchedTasksSchema = {
+    query: Joi.object({
+        search: Joi.string().required(),
+    }),
+    params: Joi.object({
+        id: Joi.string().required(),
+    }),
+}
+
 export {
-    createTaskSchema, deleteTaskSchema, getProjectTasksSchema, getSingleProjectTaskSchema, updateTaskSchema
+    createTaskSchema, deleteTaskSchema, getProjectTasksSchema, getSingleProjectTaskSchema, updateTaskSchema, getSearchedTasksSchema
 };
 

@@ -338,6 +338,10 @@ class UserServices {
         try {
             const userDetails = await userDal.getSingleUser(client, user_id);
 
+            if (!userDetails) {
+                throw new CustomError(statusCodes.BAD_REQUEST, "User does not exist", "User does not exist. Please try again with a different user id");
+            }
+
             const compare = await bcrypt.compare(oldPassword, userDetails.password);
 
             if (!compare) {
