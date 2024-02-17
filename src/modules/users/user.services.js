@@ -9,7 +9,42 @@ import bcrypt from "bcrypt";
 import { config } from "dotenv";
 import statusCodes from "http-status-codes";
 import jwt from 'jsonwebtoken';
+import teamsDal from "../teams/teams.dal.js";
+import tasksDal from "../tasks/tasks.dal.js";
+import commentsDal from "../comments/comments.dal.js";
+import projectsDal from "../projects/projects.dal.js";
 config();
+
+async function deleteDevUser(client, id) {
+    //now soft delete the user from the database 
+    const deletedUser = await userDal.deleteUser(client, id);
+
+    //get the team of the user
+    const userTeam = await teamsDal.getTeamFromUserId(client, id);
+
+    //reassign the tasks to the TL_ID
+    const updateTask = await tasksDal.updateTasksToTL(client, id, userTeam.tl_id);
+
+    //update the comments
+    const updateComment = await commentsDal.updateCommentByUserId(client, id);
+
+    return { message: "User deleted" };
+}
+
+async function deleteTlAdminUser(client, id, role) {
+    //soft delete the user
+    const deletedUser = await userDal.deleteUser(client, id);
+
+    //update the teams 
+    const updatedTeams = await teamsDal.updateTeamTL_Admin(client, id, role);
+
+    if (role == "ADMIN") {
+        //update teams and projects admin_id to dummy user
+        const updatedProject = await projectsDal.updateProjectAdmin(client, id);
+    }
+
+    return { message: "User deleted" };
+}
 
 class UserServices {
 
@@ -265,13 +300,18 @@ class UserServices {
                 throw new CustomError(statusCodes.BAD_REQUEST, "User does not exist", "User does not exist. Please try again with a different user id");
             }
 
-            const result = await userDal.deleteUser(client, id);
 
-            if (result) {
-                return { message: "User deleted" };
+
+            //check if the user is DEV or (ADMIN/TL);
+            if (user.roles === "DEV") {
+
+                //delete the user; 
+                return await deleteDevUser(client, id);
             } else {
-                throw new CustomError(statusCodes.INTERNAL_SERVER_ERROR, "Something went wrong", "Something went wrong while deleting the user. Please try again later.");
+                return await deleteTlAdminUser(client, id, user.roles);
             }
+
+            // const result = await userDal.deleteUser(client, id);
 
         } catch (err) {
             if (err instanceof CustomError) {

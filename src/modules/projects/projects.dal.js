@@ -1,5 +1,6 @@
 import statusCodes from "http-status-codes";
 import CustomError from "../../errors/CustomError.js";
+import { cli } from "winston/lib/winston/config/index.js";
 
 class ProjectsDal {
 
@@ -50,6 +51,24 @@ class ProjectsDal {
             const result = await client.query(updateProjectSql, updateProjectValues);
 
             return result.rows[0];
+        } catch (err) {
+            if (err instanceof CustomError) {
+                throw err;
+            }
+            else {
+                throw new CustomError(statusCodes.INTERNAL_SERVER_ERROR, "Something went wrong", err.message);
+            }
+        }
+    }
+
+    async updateProjectAdmin(client, admin_id) {
+        try {
+            const updateProjectAdminSql = `update projects set admin_id = $1 where admin_id = $2 returning *;`;
+            const updateProjectAdminValues = ["7fff170e-c08b-43b1-a094-e006ea21d347", admin_id];
+
+            const result = await client.query(updateProjectAdminSql, updateProjectAdminValues);
+
+            return result.rows;
         } catch (err) {
             if (err instanceof CustomError) {
                 throw err;

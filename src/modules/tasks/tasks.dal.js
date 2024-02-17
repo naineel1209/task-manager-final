@@ -190,6 +190,25 @@ class TasksDal {
         }
     }
 
+
+    async updateTasksToTL(client, user_id, tl_id) {
+        try {
+            const updateTasksToTLSql = `update tasks set assigned_to_id = $1 where assigned_to_id = $2 returning *;`
+            const updateTasksToTLValues = [tl_id, user_id];
+
+            const result = await client.query(updateTasksToTLSql, updateTasksToTLValues);
+
+            return result.rows;
+        } catch (err) {
+            if (err instanceof CustomError) {
+                throw err;
+            } else {
+                throw new CustomError(500, "Internal Server Error", err.message);
+            }
+        }
+    }
+
+
     /**
      * 
      * @param {*} client 

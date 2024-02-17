@@ -1,5 +1,6 @@
 import { config } from "dotenv";
 import statusCodes from "http-status-codes";
+import CustomError from "../../errors/CustomError.js";
 import userServices from "./user.services.js";
 config();
 
@@ -70,6 +71,10 @@ const updateUser = async (req, res) => {
 
 const deleteUser = async (req, res) => {
     const { id } = req.params;
+
+    if (req.user.id === id) {
+        throw new CustomError(statusCodes.FORBIDDEN, "cannot delete yourself", "You cannot delete yourself");
+    }
 
     //services called to delete the user
     const user = await userServices.deleteUser(id, req.user.id, req.user.role);

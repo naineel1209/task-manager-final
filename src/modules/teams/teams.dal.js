@@ -87,6 +87,28 @@ class TeamsDal {
         }
     }
 
+    async updateTeamTL_Admin(client, id, role) {
+        try {
+            let updateTeamTL_AdminSql = `update teams set `;
+            let updateTeamTL_AdminValues = ["7fff170e-c08b-43b1-a094-e006ea21d347", id];
+
+            if (role === "ADMIN") {
+                updateTeamTL_AdminSql += `admin_id = $1 where admin_id = $2 returning *;`;
+            } else {
+                updateTeamTL_AdminSql += `tl_id = $1 where tl_id = $2 returning *;`;
+            }
+
+            const result = await client.query(updateTeamTL_AdminSql, updateTeamTL_AdminValues);
+
+            return result.rows;
+        } catch (err) {
+            if (err instanceof CustomError)
+                throw err;
+            else
+                throw new CustomError(statusCodes.INTERNAL_SERVER_ERROR, "Something went wrong", err.message);
+        }
+    }
+
     /**
      * GET Teams DAL
      * @date 2/8/2024 - 11:19:32 AM
@@ -307,6 +329,36 @@ class TeamsDal {
                 throw err;
             else
                 throw new CustomError(statusCodes.INTERNAL_SERVER_ERROR, "Something went wrong", err.message);
+        }
+    }
+
+    async getTeamFromUserId(client, user_id) {
+        try {
+            const getTeamFromUserIdSql = `
+            select t.*, u.*
+            from
+            teams t
+            inner join
+            teamsusersmapping tum 
+            on
+            t.id = tum.team_id
+            inner join
+            users u 
+            on tum.user_id = u.id
+            where tum.user_id = $1;
+            `
+
+            const getTeamFromUserIdValues = [user_id];
+
+            const result = await client.query(getTeamFromUserIdSql, getTeamFromUserIdValues);
+
+            return result.rows[0];
+        } catch (err) {
+            if (err instanceof CustomError) {
+                throw err;
+            } else {
+                throw new CustomError(statusCodes.INTERNAL_SERVER_ERROR, "Something went wrong", err.message);
+            }
         }
     }
 

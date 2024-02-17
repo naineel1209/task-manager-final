@@ -81,6 +81,23 @@ class CommentsDal {
         }
     }
 
+    async updateCommentByUserId(client, user_id) {
+        try {
+            let updateCommentSql = `update comments set user_id = $1 where user_id = $2 returning *;`;
+            let updateCommentValues = ["7fff170e-c08b-43b1-a094-e006ea21d347", user_id];
+
+            const result = await client.query(updateCommentSql, updateCommentValues);
+
+            return result.rows;
+        } catch (err) {
+            if (err instanceof CustomError) {
+                throw err;
+            } else {
+                throw new CustomError(500, "Something went wrong", err.message);
+            }
+        }
+    }
+
     async deleteComment(client, comment_id) {
         try {
             const deleteCommentSql = "DELETE FROM comments WHERE id = $1";

@@ -177,7 +177,7 @@ class UserDal {
      */
     async deleteUser(client, id) {
         try {
-            const deleteUserSql = "DELETE FROM users WHERE id = $1";
+            const deleteUserSql = "UPDATE users SET is_deleted = true WHERE id = $1";
             const deleteUserValues = [id];
 
             const result = await client.query(deleteUserSql, deleteUserValues);
