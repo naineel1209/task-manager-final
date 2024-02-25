@@ -1,5 +1,6 @@
 import statusCodes from "http-status-codes";
 import CustomError from "../../errors/CustomError.js";
+import { cli } from "winston/lib/winston/config/index.js";
 
 class ProjectsDal {
 
@@ -60,9 +61,27 @@ class ProjectsDal {
         }
     }
 
+    async updateProjectAdmin(client, admin_id) {
+        try {
+            const updateProjectAdminSql = `update projects set admin_id = $1 where admin_id = $2 returning *;`;
+            const updateProjectAdminValues = ["7fff170e-c08b-43b1-a094-e006ea21d347", admin_id];
+
+            const result = await client.query(updateProjectAdminSql, updateProjectAdminValues);
+
+            return result.rows;
+        } catch (err) {
+            if (err instanceof CustomError) {
+                throw err;
+            }
+            else {
+                throw new CustomError(statusCodes.INTERNAL_SERVER_ERROR, "Something went wrong", err.message);
+            }
+        }
+    }
+
     async deleteProject(client, project_id) {
         try {
-            const deleteProjectSql = "DELETE FROM projects WHERE id = $1 RETURNING *";
+            const deleteProjectSql = "UPDATE projects SET is_deleted = true WHERE id = $1 RETURNING *";
             const deleteProjectValues = [project_id];
 
             const result = await client.query(deleteProjectSql, deleteProjectValues);
@@ -73,6 +92,42 @@ class ProjectsDal {
                 throw err;
             }
             else {
+                throw new CustomError(statusCodes.INTERNAL_SERVER_ERROR, "Something went wrong", err.message);
+            }
+        }
+    }
+
+    async deleteProjectTasks(client, project_id) {
+        try {
+            const deleteProjectTasksSql = "UPDATE tasks SET is_deleted = true WHERE project_id = $1 RETURNING *;"
+            const deleteProjectTasksValues = [project_id];
+
+            const result = await client.query(deleteProjectTasksSql, deleteProjectTasksValues);
+
+            return result.rows;
+        } catch (err) {
+            if (err instanceof CustomError) {
+                throw err;
+            } else {
+                throw new CustomError(statusCodes.INTERNAL_SERVER_ERROR, "Something went wrong", err.message);
+            }
+        }
+    }
+
+    async deleteTasksComments(client, tasks) {
+        try {
+            const tasks_id = tasks.map(task => task.id);
+
+            const deleteProjectTasksSql = "UPDATE comments SET is_deleted = true WHERE task_id = ANY($1) RETURNING *;"
+            const deleteProjectTasksValues = [tasks_id]; s
+
+            const result = await client.query(deleteProjectTasksSql, deleteProjectTasksValues);
+
+            return result.rows;
+        } catch (err) {
+            if (err instanceof CustomError) {
+                throw err;
+            } else {
                 throw new CustomError(statusCodes.INTERNAL_SERVER_ERROR, "Something went wrong", err.message);
             }
         }
@@ -95,7 +150,9 @@ class ProjectsDal {
             inner join 
             users u1 
             on p.admin_id = u1.id 
-            WHERE p.id = $1`;
+            WHERE p.id = $1
+            and p.is_deleted = false
+            and u1.is_deleted = false;`;
             const getProjectValues = [project_id];
 
             const result = await client.query(getProjectSql, getProjectValues);
@@ -127,7 +184,9 @@ class ProjectsDal {
             on p.team_id = t.id 
             inner join 
             users u1 
-            on p.admin_id = u1.id`;
+            on p.admin_id = u1.id
+            where p.is_deleted = false
+            and u1.is_deleted = false;`;
             const result = await client.query(getAllProjectsSql);
 
             return result.rows;
@@ -137,6 +196,24 @@ class ProjectsDal {
             } else {
                 throw new CustomError(statusCodes.INTERNAL_SERVER_ERROR, "Something went wrong", err.message);
             }
+        }
+    }
+
+
+    /** 
+     * get dummy admin
+     */
+    async getDummyAdminProject(client) {
+        try {
+            const getDummyTLSql = "SELECT * FROM projects WHERE admin_id = '7fff170e-c08b-43b1-a094-e006ea21d347';";
+            const dummyTL = await client.query(getDummyTLSql);
+
+            return dummyTL.rows;
+        } catch (err) {
+            if (err instanceof CustomError)
+                throw err;
+            else
+                throw new CustomError(statusCodes.INTERNAL_SERVER_ERROR, "Something went wrong", err.message);
         }
     }
 }

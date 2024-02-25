@@ -16,8 +16,11 @@ module.exports = {
             ],
             swagger: "2.0"
         },
+        servers: [{
+            url: "http://localhost:3000",
+            description: "development server"
+        }],
     },
-    servers: [],
     apis: ["./src/modules/**/*.routes.js"],
 }
 

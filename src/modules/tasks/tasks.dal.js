@@ -20,7 +20,8 @@ class TasksDal {
             JOIN 
             teams t 
             ON p.team_id = t.id 
-            WHERE p.id = $1`;
+            WHERE p.id = $1
+            and p.is_deleted = false;`;
             const projectTeamDetailsValues = [project_id];
             const projectTeamDetails = await client.query(projectTeamDetailsSql, projectTeamDetailsValues);
 
@@ -65,9 +66,22 @@ class TasksDal {
      * @param {*} project_id 
      * @returns 
      */
-    async getProjectTasks(client, project_id) {
+    async getProjectTasks(client, project_id, search, start_date, end_date) {
+
         try {
-            const getProjectTasksSql = `
+            let searchFilter = "";
+            let dateFilter = "";
+
+            if (search) {
+                searchFilter = ` AND ts.title ILIKE $2`; //add the search condition
+            }
+
+            if (start_date && end_date) {
+                dateFilter = ` AND ts.due_date >= $3 AND ts.due_date <= $4`; //add the start_date and end_date condition
+            }
+
+            const getProjectTasksValues = [project_id];
+            let getProjectTasksSql = `
             select ts.*, 
             u2.first_name as "assigned_to_first_name",
             u2.last_name as "assigned_to_last_name", 
@@ -91,10 +105,18 @@ class TasksDal {
             inner join 
             users u2 
             on ts.assigned_to_id = u2.id 
-            WHERE ts.project_id = $1`;
-            const getProjectTasksValues = [project_id];
+            WHERE ts.project_id = $1
+            AND ts.is_deleted = false
+            AND p.is_deleted = false
+            AND u1.is_deleted = false
+            AND u2.is_deleted = false
+            ${searchFilter}
+            ${dateFilter}
+            ORDER BY ts.due_date ASC, ts.created_at DESC;`;
 
             const projectTasks = await client.query(getProjectTasksSql, getProjectTasksValues);
+
+            console.log(projectTasks.rows);
 
             return projectTasks.rows;
         } catch (err) {
@@ -133,7 +155,11 @@ class TasksDal {
             join teams t2 ON t2.id = p.team_id 
             join users u on u.id = p.admin_id 
             join users u2 on u2.id = t.assigned_to_id
-            WHERE t.project_id = $1 AND t.id = $2`;
+            WHERE t.project_id = $1 AND t.id = $2
+            AND t.is_deleted = false
+            AND p.is_deleted = false
+            AND u.is_deleted = false
+            AND u2.is_deleted = false;`;
             const getTaskDetailsValues = [project_id, task_id];
 
             const taskDetails = await client.query(getTaskDetailsSql, getTaskDetailsValues);
@@ -190,6 +216,25 @@ class TasksDal {
         }
     }
 
+
+    async updateTasksToTL(client, user_id, tl_id) {
+        try {
+            const updateTasksToTLSql = `update tasks set assigned_to_id = $1 where assigned_to_id = $2 returning *;`
+            const updateTasksToTLValues = [tl_id, user_id];
+
+            const result = await client.query(updateTasksToTLSql, updateTasksToTLValues);
+
+            return result.rows;
+        } catch (err) {
+            if (err instanceof CustomError) {
+                throw err;
+            } else {
+                throw new CustomError(500, "Internal Server Error", err.message);
+            }
+        }
+    }
+
+
     /**
      * 
      * @param {*} client 
@@ -199,7 +244,7 @@ class TasksDal {
      */
     async deleteTask(client, project_id, task_id) {
         try {
-            const deleteTaskSql = "DELETE FROM tasks WHERE project_id = $1 AND id = $2 RETURNING *";
+            const deleteTaskSql = "update tasks set is_deleted = true where project_id = $1 and id = $2 returning *;";
             const deleteTaskValues = [project_id, task_id];
 
             const task = await client.query(deleteTaskSql, deleteTaskValues);
@@ -234,12 +279,81 @@ class TasksDal {
             join teams t2 ON t2.id = p.team_id 
             join users u on u.id = p.admin_id 
             join users u2 on u2.id = t.assigned_to_id
-            WHERE t.assigned_to_id = $1;`;
+            WHERE t.assigned_to_id = $1
+            AND t.is_deleted = false
+            AND p.is_deleted = false
+            AND u.is_deleted = false
+            AND u2.is_deleted = false
+            ORDER BY due_date ASC, created_at DESC;`;
             const getUserTasksValues = [user_id];
 
             const tasks = await client.query(getUserTasksSql, getUserTasksValues);
 
             return tasks.rows;
+        } catch (err) {
+            if (err instanceof CustomError) {
+                throw err;
+            } else {
+                throw new CustomError(500, "Something went wrong", err.message);
+            }
+        }
+    }
+
+
+
+    /**
+     * get the tasks assigned to the TL of the team - that tasks need to be 
+     */
+    async getTlTasks(client, project_id) {
+        try {
+            const getTlTasksSql = `
+                  select t.*, u.first_name, u.last_name, u.username, u.created_at from
+            tasks t
+            inner join
+            projects p
+            on t.project_id = p.id
+            inner join
+            teams t2
+            on p.team_id = t2.id
+            inner join
+            users u
+            on t2.tl_id = u.id
+            where 
+            p.id = $1 
+            and t.assigned_to_id = t2.tl_id
+            and t.is_deleted = false
+            and p.is_deleted = false
+            and u.is_deleted = false;`
+
+            const getTlTasksValues = [project_id];
+
+            const userTasks = await client.query(getTlTasksSql, getTlTasksValues);
+
+            return userTasks.rows;
+        }
+        catch (err) {
+            if (err instanceof CustomError) {
+                throw err;
+            } else {
+                throw new CustomError(500, "Something went wrong", err.message);
+            }
+        }
+    }
+
+    /**
+     * get the searched tasks
+     * @param {*} client
+     * @param {*} project_id
+     * @param {*} search
+     * @returns
+     */
+    async getSearchedTasks(client, project_id, search) {
+        try {
+            //ilike 
+            const getSearchedTasksSql = `
+            `;
+            const getSearchedTasksValues = [project_id, search];
+
         } catch (err) {
             if (err instanceof CustomError) {
                 throw err;

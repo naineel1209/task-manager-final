@@ -109,7 +109,9 @@ CREATE TABLE public.comments (
     description text NOT NULL,
     user_id uuid NOT NULL,
     task_id uuid NOT NULL,
-    created_at timestamp without time zone DEFAULT CURRENT_TIMESTAMP NOT NULL
+    created_at timestamp without time zone DEFAULT CURRENT_TIMESTAMP NOT NULL,
+    edited boolean DEFAULT false,
+    is_deleted boolean DEFAULT false
 );
 
 
@@ -123,7 +125,8 @@ CREATE TABLE public.projects (
     description text,
     team_id uuid,
     admin_id uuid,
-    created_at timestamp without time zone DEFAULT CURRENT_TIMESTAMP NOT NULL
+    created_at timestamp without time zone DEFAULT CURRENT_TIMESTAMP NOT NULL,
+    is_deleted boolean DEFAULT false
 );
 
 
@@ -145,22 +148,12 @@ CREATE TABLE public.tasks (
     title character varying(200) NOT NULL,
     description text NOT NULL,
     categories json NOT NULL,
-    status public.task_status NOT NULL,
-    tl_id uuid NOT NULL,
+    status public.task_status DEFAULT 'TODO'::public.task_status NOT NULL,
+    assigned_to_id uuid NOT NULL,
     project_id uuid NOT NULL,
     due_date timestamp without time zone NOT NULL,
-    created_at timestamp without time zone DEFAULT CURRENT_TIMESTAMP NOT NULL
-);
-
-
---
--- Name: tasksusersmapping; Type: TABLE; Schema: public; Owner: -
---
-
-CREATE TABLE public.tasksusersmapping (
-    id uuid DEFAULT public.uuid_generate_v4() NOT NULL,
-    user_id uuid NOT NULL,
-    task_id uuid NOT NULL
+    created_at timestamp without time zone DEFAULT CURRENT_TIMESTAMP NOT NULL,
+    is_deleted boolean DEFAULT false
 );
 
 
@@ -183,7 +176,8 @@ CREATE TABLE public.teams (
 CREATE TABLE public.teamsusersmapping (
     id uuid DEFAULT public.uuid_generate_v4() NOT NULL,
     user_id uuid,
-    team_id uuid
+    team_id uuid,
+    is_deleted boolean DEFAULT false
 );
 
 
@@ -200,7 +194,8 @@ CREATE TABLE public.users (
     email character varying(100) NOT NULL,
     roles public.roles NOT NULL,
     refresh_token character varying,
-    created_at timestamp without time zone DEFAULT CURRENT_TIMESTAMP NOT NULL
+    created_at timestamp without time zone DEFAULT CURRENT_TIMESTAMP NOT NULL,
+    is_deleted boolean DEFAULT false
 );
 
 
@@ -245,14 +240,6 @@ ALTER TABLE ONLY public.tasks
 
 
 --
--- Name: tasksusersmapping tasksusersmapping_pkey; Type: CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.tasksusersmapping
-    ADD CONSTRAINT tasksusersmapping_pkey PRIMARY KEY (id);
-
-
---
 -- Name: teams teams_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -266,6 +253,14 @@ ALTER TABLE ONLY public.teams
 
 ALTER TABLE ONLY public.teamsusersmapping
     ADD CONSTRAINT teamsusersmapping_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: teamsusersmapping uk_user_id; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.teamsusersmapping
+    ADD CONSTRAINT uk_user_id UNIQUE (user_id);
 
 
 --
@@ -345,23 +340,7 @@ ALTER TABLE ONLY public.tasks
 --
 
 ALTER TABLE ONLY public.tasks
-    ADD CONSTRAINT tasks_tl_id_fkey FOREIGN KEY (tl_id) REFERENCES public.users(id) ON DELETE CASCADE;
-
-
---
--- Name: tasksusersmapping tasksusersmapping_task_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.tasksusersmapping
-    ADD CONSTRAINT tasksusersmapping_task_id_fkey FOREIGN KEY (task_id) REFERENCES public.tasks(id) ON DELETE CASCADE;
-
-
---
--- Name: tasksusersmapping tasksusersmapping_user_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.tasksusersmapping
-    ADD CONSTRAINT tasksusersmapping_user_id_fkey FOREIGN KEY (user_id) REFERENCES public.users(id) ON DELETE CASCADE;
+    ADD CONSTRAINT tasks_tl_id_fkey FOREIGN KEY (assigned_to_id) REFERENCES public.users(id) ON DELETE CASCADE;
 
 
 --
@@ -406,4 +385,5 @@ ALTER TABLE ONLY public.teamsusersmapping
 --
 
 INSERT INTO public.schema_migrations (version) VALUES
-    ('20240206094302');
+    ('20240206094302'),
+    ('20240217035159');

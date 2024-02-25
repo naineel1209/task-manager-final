@@ -14,7 +14,7 @@ class MainDal {
      */
     async getUserCount(client) {
         try {
-            let userCountSql = "SELECT COUNT(*) FROM users";
+            let userCountSql = "SELECT COUNT(*) FROM users WHERE is_deleted = false;";
             const userCount = await client.query(userCountSql);
             return userCount.rows[0].count;
         } catch (err) {
@@ -34,7 +34,7 @@ class MainDal {
      */
     async checkUserExists(client, username) {
         try {
-            let userExistsSql = "SELECT * FROM users WHERE username = $1";
+            let userExistsSql = "SELECT * FROM users WHERE username = $1 AND is_deleted = false;";
             const userExists = await client.query(userExistsSql, [username]);
             return userExists.rows[0];
         } catch (err) {
@@ -54,7 +54,7 @@ class MainDal {
      */
     async checkUserExistsById(client, id) {
         try {
-            let userExistsSql = "SELECT * FROM users WHERE id = $1";
+            let userExistsSql = "SELECT * FROM users WHERE id = $1 AND is_deleted = FALSE;";
             const userExists = await client.query(userExistsSql, [id]);
             return userExists.rows[0];
         } catch (err) {

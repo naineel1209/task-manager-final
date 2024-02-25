@@ -5,10 +5,12 @@ import {
     checkPermission,
     verifyToken
 } from "../../middlewares/user.middleware.js";
+import tasksRoutes from "../tasks/tasks.routes.js";
 import {
     createProject,
     deleteProject,
     getAllProjects,
+    getDummyAdminProject,
     getProject,
     updateProject
 } from "./projects.controller.js";
@@ -17,7 +19,6 @@ import {
     deleteProjectSchema,
     updateProjectSchema
 } from "./projects.schema.js";
-import tasksRoutes from "../tasks/tasks.routes.js";
 
 //!Projects
 
@@ -75,6 +76,11 @@ router
     .route("/")
     .get(verifyToken, getAllProjects)
     .post(verifyToken, checkPermission(["ADMIN"]), validate(createProjectSchema, { keyByField: true }), createProject)
+
+
+router
+    .route("/get-dummy-project")
+    .get(verifyToken, checkPermission(["ADMIN"]), getDummyAdminProject)
 
 
 /**

@@ -41,7 +41,13 @@ const getAllProjects = async (req, res) => {
     return res.status(statusCodes.OK).send(projects);
 }
 
+const getDummyAdminProject = async (req, res) => {
+    const admin = await projectsServices.getDummyAdminProject();
+
+    return res.status(statusCodes.OK).send(admin);
+}
+
 export {
-    createProject, deleteProject, getAllProjects, getProject, updateProject
+    createProject, deleteProject, getAllProjects, getDummyAdminProject, getProject, updateProject
 };
 

@@ -8,7 +8,14 @@ const createTask = async (req, res) => {
 };
 
 const getProjectTasks = async (req, res) => {
-    const tasks = await tasksServices.getProjectTasks(req.params.id);
+
+    if (req.query.start_date && req.query.end_date) {
+        if (new Date(req.query.start_date) > new Date(req.query.end_date)) {
+            return res.status(statusCodes.BAD_REQUEST).send({ message: "start_date cannot be greater than end_date" });
+        }
+    }
+
+    const tasks = await tasksServices.getProjectTasks(req.params.id, req.query.search, req.query.start_date, req.query.end_date);
 
     return res.status(statusCodes.OK).send(tasks);
 }
@@ -39,7 +46,26 @@ const getUserTasks = async (req, res) => {
     return res.status(statusCodes.OK).send(userTasks);
 }
 
+const getTlTasks = async (req, res) => {
+    const { id } = req.params; //project id
+    const tlTasks = await tasksServices.getTlTasks(id);
+
+    return res.status(statusCodes.OK).send(tlTasks);
+}
+
+const getActivityLog = async (req, res) => {
+    const activityLog = await tasksServices.getTaskActivityLogs(req.params.id, req.params.task_id);
+
+    return res.status(statusCodes.OK).send(activityLog);
+}
+
+const getSearchedTasks = async (req, res) => {
+    const searchedTasks = await tasksServices.getSearchedTasks(req.query.search);
+
+    return res.status(statusCodes.OK).send(searchedTasks);
+}
+
 export {
-    createTask, deleteTask, getProjectTasks, getSingleProjectTask, getUserTasks, updateTask
+    createTask, deleteTask, getActivityLog, getProjectTasks, getSearchedTasks, getSingleProjectTask, getTlTasks, getUserTasks, updateTask
 };
 

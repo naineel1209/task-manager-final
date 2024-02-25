@@ -95,7 +95,7 @@ class UserDal {
      */
     async changeRole(client, id, role) {
         try {
-            const changeRoleSql = "UPDATE users SET roles = $1 WHERE id = $2;";
+            const changeRoleSql = "UPDATE users SET roles = $1 WHERE id = $2 AND is_deleted = false;";
             const changeRoleValues = [role, id];
 
             const result = await client.query(changeRoleSql, changeRoleValues);
@@ -120,7 +120,7 @@ class UserDal {
      */
     async getSingleUser(client, id) {
         try {
-            const userSql = "SELECT * FROM users WHERE id = $1";
+            const userSql = "SELECT * FROM users WHERE id = $1 AND is_deleted = false";
             const userValues = [id];
 
             const user = await client.query(userSql, userValues);
@@ -177,7 +177,7 @@ class UserDal {
      */
     async deleteUser(client, id) {
         try {
-            const deleteUserSql = "DELETE FROM users WHERE id = $1";
+            const deleteUserSql = "UPDATE users SET is_deleted = true WHERE id = $1";
             const deleteUserValues = [id];
 
             const result = await client.query(deleteUserSql, deleteUserValues);

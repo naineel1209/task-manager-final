@@ -14,6 +14,20 @@ class ActivityLogsDAL {
             throw err;
         }
     }
+
+
+    async getTaskActivityLogs(client, task_id) {
+        try {
+            const getLogsSql = "SELECT a.* FROM activitylogs a inner join tasks t on a.task_id = t.id inner join users u on a.user_id = u.id WHERE a.task_id = $1 ORDER BY a.log_date DESC;";
+            const getLogsValues = [task_id];
+
+            const logs = await client.query(getLogsSql, getLogsValues);
+
+            return logs.rows;
+        } catch (err) {
+            throw err;
+        }
+    }
 }
 
 export default new ActivityLogsDAL();

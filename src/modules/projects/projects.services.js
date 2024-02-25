@@ -1,5 +1,6 @@
 import pool from "../../../config/db.config.js";
 import CustomError from "../../errors/CustomError.js";
+import tasksDal from "../tasks/tasks.dal.js";
 import projectsDal from "./projects.dal.js";
 
 class ProjectServices {
@@ -64,7 +65,14 @@ class ProjectServices {
     async deleteProject(project_id) {
         const client = await pool.connect();
         try {
+            //update the project as - isDeleted = true
             const deleteProject = await projectsDal.deleteProject(client, project_id);
+
+            //update all the tasks of the project as as deleted
+            const deletedProjectTasks = await projectsDal.deleteProjectTasks(client, project_id);
+
+            //update all the comments of 
+            const deleteTasksComments = await projectsDal.deleteTasksComments(client, deletedProjectTasks)
 
             return deleteProject;
         } catch (err) {
@@ -106,6 +114,23 @@ class ProjectServices {
             const projects = await projectsDal.getAllProjects(client);
 
             return projects;
+        } catch (err) {
+            if (err instanceof CustomError) {
+                throw err;
+            } else {
+                throw new CustomError(500, "Something went wrong", err.message);
+            }
+        } finally {
+            client.release();
+        }
+    }
+
+    async getDummyAdminProject() {
+        const client = await pool.connect();
+        try {
+            const admin = await projectsDal.getDummyAdminProject(client);
+
+            return admin;
         } catch (err) {
             if (err instanceof CustomError) {
                 throw err;

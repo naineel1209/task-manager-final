@@ -23,7 +23,7 @@ class TasksServices {
                 throw new CustomError(403, "Forbidden", "You are not allowed to create task in this project");
             }
 
-            const userInTeam = await teamsDal.checkIfUsersExistInTeam(client, projectTeamDetails.team_id, [data.assignedTo]);
+            const userInTeam = await teamsDal.checkIfUsersExistInTeam(client, projectTeamDetails.team_id, data.assignedTo);
 
             if (!userInTeam) {
                 throw new CustomError(400, "Bad Request", "User not in the team");
@@ -37,7 +37,6 @@ class TasksServices {
                 data.dueDate = format(new Date(data.dueDate), "yyyy-MM-dd");
 
             const task = await tasksDal.createTask(client, project_id, data);
-            console.log(task);
 
             //add the task to the activity log
             await activity_logsDal.addToLog(client, task.id, creator_id, new Date(), task.status);
@@ -59,10 +58,10 @@ class TasksServices {
      * @param {*} project_id 
      * @returns 
      */
-    async getProjectTasks(project_id) {
+    async getProjectTasks(project_id, search, start_date, end_date) {
         const client = await pool.connect();
         try {
-            const projectTasks = await tasksDal.getProjectTasks(client, project_id);
+            const projectTasks = await tasksDal.getProjectTasks(client, project_id, search, start_date, end_date);
 
             return projectTasks;
         } catch (err) {
@@ -100,7 +99,7 @@ class TasksServices {
             }
 
             if (data.assignedTo) {
-                const userInTeam = await teamsDal.checkIfUsersExistInTeam(client, projectTeamDetails.team_id, [data.assignedTo]);
+                const userInTeam = await teamsDal.checkIfUsersExistInTeam(client, projectTeamDetails.team_id, data.assignedTo);
 
                 if (!userInTeam) {
                     throw new CustomError(400, "Bad Request", "User not in the team");
@@ -210,6 +209,72 @@ class TasksServices {
             const userTasks = await tasksDal.getUserTasks(client, user_id);
 
             return userTasks;
+        } catch (err) {
+            if (err instanceof CustomError) {
+                throw err;
+            } else {
+                throw new CustomError(500, "Something went wrong!", err.message);
+            }
+        } finally {
+            client.release();
+        }
+    }
+
+
+    /**
+     * get the project tasks assigned to the TL of the team - that tasks need to be reassigned
+     * @param {*} project 
+     * @returns 
+     */
+    async getTlTasks(project_id) {
+        const client = await pool.connect();
+        try {
+            const tlTasks = await tasksDal.getTlTasks(client, project_id);
+
+            return tlTasks;
+        } catch (err) {
+            if (err instanceof CustomError) {
+                throw err;
+            } else {
+                throw new CustomError(500, "Something went wrong!", err.message);
+            }
+        } finally {
+            client.release();
+        }
+    }
+
+    /** 
+     * get activity logs of the task
+     * @param {*} task_id
+     * @returns
+     */
+
+    async getTaskActivityLogs(project_id, task_id) {
+        const client = await pool.connect();
+        try {
+            const activityLogs = await activity_logsDal.getTaskActivityLogs(client, task_id);
+
+            return activityLogs;
+        } catch (err) {
+            if (err instanceof CustomError) {
+                throw err;
+            } else {
+                throw new CustomError(500, "Something went wrong!", err.message);
+            }
+        } finally {
+            client.release();
+        }
+    }
+
+    /**
+     * get the searched tasks
+     */
+    async getSearchedTasks(project_id, search) {
+        const client = await pool.connect();
+        try {
+            const searchedTasks = await tasksDal.getSearchedTasks(client, project_id, search);
+
+            return searchedTasks;
         } catch (err) {
             if (err instanceof CustomError) {
                 throw err;

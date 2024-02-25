@@ -27,7 +27,7 @@ class TeamsServices {
             }
 
             //check if tl has roles of tl
-            if (tlExists.roles !== "TL") {
+            if (tlExists.roles === "DEV") {
                 throw new CustomError(statusCodes.BAD_REQUEST, "Team Lead is not a Team Lead", "Team Lead is not a Team Lead.");
             }
 
@@ -74,6 +74,7 @@ class TeamsServices {
 
             //delete the team
             const deletedTeam = await teamsDal.deleteTeam(client, team_id);
+            a
 
             return (deletedTeam) ? "Team deleted successfully" : "Team could not be deleted. Please try again later.";
         } catch (err) {
@@ -210,9 +211,15 @@ class TeamsServices {
             //check if all users/user exist in the database
             let usersExist;
             if (Array.isArray(user_id)) {
-                usersExist = await teamsDal.checkIfUsersExistInTeam(client, team_id, user_id);
+                for (let item of user_id) {
+                    usersExist = await teamsDal.checkIfUsersExistInTeam(client, team_id, item);
+
+                    if (!usersExist) {
+                        throw new CustomError(statusCodes.BAD_REQUEST, "User doesn't exist", "User does not exist in the database");
+                    }
+                }
             } else {
-                usersExist = await teamsDal.checkIfUsersExistInTeam(client, team_id, [user_id]);
+                usersExist = await teamsDal.checkIfUsersExistInTeam(client, team_id, user_id);
             }
 
             if (!usersExist) {
@@ -262,10 +269,6 @@ class TeamsServices {
         const client = await pool.connect();
         try {
             const teamExists = await teamsDal.checkIfUserIsInAnyTeam(client, user_id);
-
-            if (!teamExists) {
-                throw new CustomError(statusCodes.BAD_REQUEST, "User does not belong to any team", "User does not belong to any team.");
-            }
 
             return teamExists;
         } catch (err) {
@@ -355,6 +358,47 @@ class TeamsServices {
             const projects = await teamsDal.getTeamProjects(client, team_id);
 
             return projects;
+        } catch (err) {
+            if (err instanceof CustomError)
+                throw err;
+            else
+                throw new CustomError(statusCodes.INTERNAL_SERVER_ERROR, "Something went wrong", err.message);
+        } finally {
+            client.release();
+        }
+    }
+
+
+    /**
+     * Service to get the dummy team lead
+     * @returns {Promise<any> | CustomError}
+     */
+    async getDummyTL() {
+        const client = await pool.connect();
+        try {
+            const dummyTL = await teamsDal.getDummyTL(client);
+
+            return dummyTL;
+        } catch (err) {
+            if (err instanceof CustomError)
+                throw err;
+            else
+                throw new CustomError(statusCodes.INTERNAL_SERVER_ERROR, "Something went wrong", err.message);
+        } finally {
+            client.release();
+        }
+    }
+
+    /**
+     * Service to get the dummy admin
+     * @returns {Promise<any> | CustomError}
+     */
+    async getDummyAdmin() {
+        const client = await pool.connect();
+        try {
+            const dummyTL = await teamsDal.getDummyAdmin(client);
+
+            return dummyTL;
         } catch (err) {
             if (err instanceof CustomError)
                 throw err;

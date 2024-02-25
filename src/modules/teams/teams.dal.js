@@ -87,6 +87,28 @@ class TeamsDal {
         }
     }
 
+    async updateTeamTL_Admin(client, id, role) {
+        try {
+            let updateTeamTL_AdminSql = `update teams set `;
+            let updateTeamTL_AdminValues = ["7fff170e-c08b-43b1-a094-e006ea21d347", id];
+
+            if (role === "ADMIN") {
+                updateTeamTL_AdminSql += `admin_id = $1 where admin_id = $2 returning *;`;
+            } else {
+                updateTeamTL_AdminSql += `tl_id = $1 where tl_id = $2 returning *;`;
+            }
+
+            const result = await client.query(updateTeamTL_AdminSql, updateTeamTL_AdminValues);
+
+            return result.rows;
+        } catch (err) {
+            if (err instanceof CustomError)
+                throw err;
+            else
+                throw new CustomError(statusCodes.INTERNAL_SERVER_ERROR, "Something went wrong", err.message);
+        }
+    }
+
     /**
      * GET Teams DAL
      * @date 2/8/2024 - 11:19:32 AM
@@ -112,7 +134,9 @@ class TeamsDal {
             on t.tl_id = u1.id
             inner join 
             users u2 
-            on t.admin_id = u2.id;`;
+            on t.admin_id = u2.id
+            where
+            u1.is_deleted = false and u2.is_deleted = false;`;
             const teams = await client.query(getTeamsSql);
 
             return teams.rows;
@@ -133,7 +157,7 @@ class TeamsDal {
     async getSingleTeam(client, team_id) {
         try {
 
-            let getSingleTeamSql = "SELECT u.* FROM teamsusersmapping tum INNER JOIN users u ON tum.user_id = u.id WHERE tum.team_id = $1";
+            let getSingleTeamSql = "SELECT u.* FROM teamsusersmapping tum INNER JOIN users u ON tum.user_id = u.id WHERE tum.team_id = $1 AND u.is_deleted = false;";
             const getSingleTeamValues = [team_id];
             const teams = await client.query(getSingleTeamSql, getSingleTeamValues);
 
@@ -201,9 +225,16 @@ class TeamsDal {
     */
     async removeMemberFromTeam(client, team_id, user_id, multiple = false) {
         try {
-            let addMemberToTeamSql = "DELETE FROM teamsusersmapping WHERE team_id = $1 AND user_id = ANY($2) RETURNING *;";
-            let addMemberToTeamValues = [team_id, user_id];
-            const result = await client.query(addMemberToTeamSql, addMemberToTeamValues);
+            let removeMembersFromTeamSql = "DELETE FROM teamsusersmapping WHERE team_id = $1 AND user_id = ";
+
+            if (multiple) {
+                removeMembersFromTeamSql += "ANY($2) RETURNING *";
+            } else {
+                removeMembersFromTeamSql += "$2 RETURNING *";
+            }
+
+            let removeMemberFromTeamValues = [team_id, user_id];
+            const result = await client.query(removeMembersFromTeamSql, removeMemberFromTeamValues);
 
             return result.rows;
         } catch (err) {
@@ -248,7 +279,7 @@ class TeamsDal {
      */
     async checkIfTeamExists(client, team_id) {
         try {
-            const checkIfTeamExistsSql = "SELECT * FROM teams WHERE id = $1";
+            const checkIfTeamExistsSql = "SELECT * FROM teams WHERE id = $1;";
             const checkIfTeamExistsValues = [team_id];
 
             const teamExists = await client.query(checkIfTeamExistsSql, checkIfTeamExistsValues);
@@ -289,7 +320,9 @@ class TeamsDal {
             inner join
             users u3
             on tum.user_id = u3.id
-            WHERE tum.user_id = $1`;
+            WHERE 
+            tum.user_id = $1 
+            AND u3.is_deleted = false AND u1.is_deleted = false AND u2.is_deleted = false;`;
             const checkIfUserIsInAnyTeamValues = [user_id];
 
             const userIsInAnyTeam = await client.query(checkIfUserIsInAnyTeamSql, checkIfUserIsInAnyTeamValues);
@@ -303,6 +336,37 @@ class TeamsDal {
         }
     }
 
+    async getTeamFromUserId(client, user_id) {
+        try {
+            const getTeamFromUserIdSql = `
+            select t.*, u.*
+            from
+            teams t
+            inner join
+            teamsusersmapping tum 
+            on
+            t.id = tum.team_id
+            inner join
+            users u 
+            on tum.user_id = u.id
+            where tum.user_id = $1
+            and u.is_deleted = false;
+            `
+
+            const getTeamFromUserIdValues = [user_id];
+
+            const result = await client.query(getTeamFromUserIdSql, getTeamFromUserIdValues);
+
+            return result.rows[0];
+        } catch (err) {
+            if (err instanceof CustomError) {
+                throw err;
+            } else {
+                throw new CustomError(statusCodes.INTERNAL_SERVER_ERROR, "Something went wrong", err.message);
+            }
+        }
+    }
+
     /**
      * DAL for checking if users exist in the team
      * @param {import("pg").PoolClient} client 
@@ -310,10 +374,10 @@ class TeamsDal {
      * @param {string} user_id 
      * @returns QueryResult<any> | CustomError
      */
-    async checkIfUsersExistInTeam(client, team_id, user_id) {
+    async checkIfUsersExistInTeam(client, team_id, user_id, multiple) {
         try {
-            const checkIfUsersExistInTeamSql = "SELECT * FROM teamsusersmapping WHERE team_id = $1 AND user_id = ANY($2)";
-            const checkIfUsersExistInTeamValues = [team_id, user_id];
+            let checkIfUsersExistInTeamSql = "SELECT * FROM teamsusersmapping tum inner join users u on tum.user_id = u.id WHERE team_id = $1 AND user_id = $2 AND u.is_deleted = false;";
+            let checkIfUsersExistInTeamValues = [team_id, user_id];
 
             const usersExist = await client.query(checkIfUsersExistInTeamSql, checkIfUsersExistInTeamValues);
 
@@ -349,12 +413,48 @@ class TeamsDal {
             inner join
             users u
             on p.admin_id = u.id 
-            WHERE p.team_id = $1`;
+            WHERE p.team_id = $1
+            and p.is_deleted = false
+            and u.is_deleted = false;`;
             const getTeamProjectsValues = [team_id];
 
             const teamProjects = await client.query(getTeamProjectsSql, getTeamProjectsValues);
 
             return teamProjects.rows;
+        } catch (err) {
+            if (err instanceof CustomError)
+                throw err;
+            else
+                throw new CustomError(statusCodes.INTERNAL_SERVER_ERROR, "Something went wrong", err.message);
+        }
+    }
+
+    /** 
+     * get dummy tl
+     */
+    async getDummyTL(client) {
+        try {
+            const getDummyTLSql = "SELECT * FROM teams WHERE tl_id = '7fff170e-c08b-43b1-a094-e006ea21d347';";
+            const dummyTL = await client.query(getDummyTLSql);
+
+            return dummyTL.rows;
+        } catch (err) {
+            if (err instanceof CustomError)
+                throw err;
+            else
+                throw new CustomError(statusCodes.INTERNAL_SERVER_ERROR, "Something went wrong", err.message);
+        }
+    }
+
+    /** 
+     * get dummy admin
+     */
+    async getDummyAdmin(client) {
+        try {
+            const getDummyTLSql = "SELECT * FROM teams WHERE admin_id = '7fff170e-c08b-43b1-a094-e006ea21d347';";
+            const dummyTL = await client.query(getDummyTLSql);
+
+            return dummyTL.rows;
         } catch (err) {
             if (err instanceof CustomError)
                 throw err;

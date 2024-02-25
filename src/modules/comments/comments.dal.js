@@ -9,7 +9,7 @@ class CommentsDal {
      */
     async getComments(client, task_id) {
         try {
-            const getCommentsSql = `select c.*, u.first_name as first_name, u.last_name as last_name, u.username as username, u.email as user_email from comments c inner join users u on c.user_id = u.id WHERE c.task_id = $1;`;
+            const getCommentsSql = `select c.*, u.first_name as first_name, u.last_name as last_name, u.username as username, u.email as user_email from comments c inner join users u on c.user_id = u.id WHERE c.task_id = $1 and c.is_deleted = false and u.is_deleted = false;`;
             const getCommentsValues = [task_id];
 
             const comments = await client.query(getCommentsSql, getCommentsValues);
@@ -81,9 +81,26 @@ class CommentsDal {
         }
     }
 
+    async updateCommentByUserId(client, user_id) {
+        try {
+            let updateCommentSql = `update comments set user_id = $1 where user_id = $2 returning *;`;
+            let updateCommentValues = ["7fff170e-c08b-43b1-a094-e006ea21d347", user_id];
+
+            const result = await client.query(updateCommentSql, updateCommentValues);
+
+            return result.rows;
+        } catch (err) {
+            if (err instanceof CustomError) {
+                throw err;
+            } else {
+                throw new CustomError(500, "Something went wrong", err.message);
+            }
+        }
+    }
+
     async deleteComment(client, comment_id) {
         try {
-            const deleteCommentSql = "DELETE FROM comments WHERE id = $1";
+            const deleteCommentSql = "UPDATE comments SET is_deleted = true WHERE id = $1 RETURNING *;";
             const deleteCommentValues = [comment_id];
 
             const deletedComment = await client.query(deleteCommentSql, deleteCommentValues);

@@ -4,8 +4,11 @@ import { checkPermission, verifyToken } from "../../middlewares/user.middleware.
 import {
     createTask,
     deleteTask,
+    getActivityLog,
     getProjectTasks,
+    getSearchedTasks,
     getSingleProjectTask,
+    getTlTasks,
     updateTask,
 } from "./tasks.controller.js";
 import {
@@ -14,6 +17,7 @@ import {
     getProjectTasksSchema,
     getSingleProjectTaskSchema,
     updateTaskSchema,
+    getSearchedTasksSchema
 } from "./tasks.schema.js";
 
 const router = Router({ mergeParams: true });
@@ -82,6 +86,10 @@ router
     .route("/")
     .get(verifyToken, validate(getProjectTasksSchema, { keyByField: true }), getProjectTasks)
     .post(verifyToken, checkPermission(["ADMIN", "TL"]), validate(createTaskSchema, { keyByField: true }), createTask);
+
+router
+    .route("/get-tl-tasks")
+    .get(verifyToken, validate(getProjectTasksSchema, { keyByField: true }), getTlTasks);
 
 
 /**
@@ -187,5 +195,9 @@ router
     .get(verifyToken, validate(getSingleProjectTaskSchema, { keyByField: true }), getSingleProjectTask)
     .patch(verifyToken, checkPermission(["ADMIN", "TL"]), validate(updateTaskSchema, { keyByField: true }), updateTask)
     .delete(verifyToken, checkPermission(["ADMIN", "TL"]), validate(deleteTaskSchema, { keyByField: true }), deleteTask);
+
+router
+    .route("/:task_id/get-activity")
+    .get(verifyToken, validate(getSingleProjectTaskSchema, { keyByField: true }), getActivityLog);
 
 export default router;
